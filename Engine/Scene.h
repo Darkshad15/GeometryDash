@@ -1,8 +1,8 @@
 #pragma once
 #include "GameObject.h"
 
-class GameObject;
 
+class GameObject;
 
 
 class Scene
@@ -10,10 +10,14 @@ class Scene
 private:
 	sf::Clock clock;
 	std::string name;
+
 	std::vector<GameObject*> objects;
 	sf::Vector2u size = { 800,800 };
 	GameObject* player = nullptr;
 	GameObject* LvLData = nullptr;
+
+	
+
 public:
 
 	//Constructeurs

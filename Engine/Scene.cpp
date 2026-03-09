@@ -4,6 +4,7 @@ Scene::Scene(std::string name,sf::Vector2u size)
 {
 	this->size = size;
 	this->name = name;
+
 }
 
 void Scene::AddGameObject(GameObject* obj)

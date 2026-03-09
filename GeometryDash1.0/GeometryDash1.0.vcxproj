@@ -133,10 +133,12 @@
     <ClCompile Include="Elements.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Scenes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Elements.h" />
     <ClInclude Include="Level.h" />
+    <ClInclude Include="Scenes.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.vcxproj">
