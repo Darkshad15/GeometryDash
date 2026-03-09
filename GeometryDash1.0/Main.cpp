@@ -1,10 +1,10 @@
 #include <SFML/Graphics.hpp>
-
+#include "Elements.h"
+#include "Engine.h"
 int main()
 {
     sf::RenderWindow window(sf::VideoMode({ 200, 200 }), "SFML works!");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
+    Block* carre = new Block();
 
     while (window.isOpen())
     {
@@ -15,7 +15,7 @@ int main()
         }
 
         window.clear();
-        window.draw(shape);
+        carre->draw(window);
         window.display();
     }
 }
