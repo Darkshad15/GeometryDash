@@ -5,7 +5,7 @@ VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GeometryDash1.0", "GeometryDash1.0\GeometryDash1.0.vcxproj", "{4EA14354-6071-4814-A22B-FC7F91842CBB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "..\..\GamingCampus-MillieBourgois-25-26\shoot-em-up-super-awesome-team-name\Engine\Engine.vcxproj", "{58159B76-87A1-485B-8FF5-AC0CA169DC54}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine\Engine.vcxproj", "{58159B76-87A1-485B-8FF5-AC0CA169DC54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
