@@ -238,3 +238,29 @@ public:
 	void Update() override {}
 	void Render(sf::RenderWindow& window) override {}
 };
+
+class Shape : public Component {
+public:
+	enum class Type { NONE, RECTANGLE, CIRCLE, TRIANGLE };
+
+private:
+	sf::RectangleShape rectangle;
+	sf::CircleShape circle;
+	sf::CircleShape triangle;
+	sf::Vector2f size;
+	sf::Color color;
+	Type currentType = Type::NONE;
+
+public:
+	Shape();
+	sf::FloatRect getBounds();
+	Type getType() { return currentType; }
+
+	void setRectangle(sf::Vector2f s, sf::Color c);
+	void setCircle(float radius, sf::Color c);
+	void setTriangle(float radius, sf::Color c);
+
+	void Start() override;
+	void Update() override;
+	void Render(sf::RenderWindow& window);
+};

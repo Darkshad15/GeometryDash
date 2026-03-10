@@ -1,15 +1,18 @@
 #include "Elements.h"
 
 
-Elements::Elements(int t) {
-	type = t;
+Elements::Elements() {
+	
 }
 
 
 void Elements::logic()
 {
 	if (type == 1) {
-
+		if (gameObject) {
+			Collider* col = gameObject->GetComponent<Collider>();
+			Shape* rect = gameObject->GetComponent<Shape>();
+		}
 	}
 	else if (type == 2) {
 
@@ -24,12 +27,18 @@ void Elements::draw(sf::RenderWindow& win)
 
 }
 
-Block::Block() : Elements(1) {
-	rectangle.setSize({ 64.f,64.f });
-	rectangle.setFillColor(sf::Color(150, 50, 250));
-}
 
-void Block::draw(sf::RenderWindow& win)
+
+GameObject* Elements::createBlock()
 {
-	win.draw(rectangle);
+	GameObject* block = new GameObject({100,100});
+	Shape* shape = new Shape();
+	shape->setRectangle({ 64.f, 64.f }, sf::Color::Green);
+	Variables* var = new Variables();
+	Collider* collision = new Collider();
+	var->addInt("Type", 1);
+	type = var->getInt("Type");
+	block->AddComponent(collision);
+	block->AddComponent(shape);
+	return block;
 }
