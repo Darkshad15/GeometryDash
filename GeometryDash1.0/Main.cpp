@@ -2,17 +2,18 @@
 #include "Elements.h"
 #include "Engine.h"
 #include "Scene.h"
-#include "Elements.h"
+
+#include "Level.h"
 int main()
 {
-    Elements* el = new Elements();
-    Engine engine({ 800, 600 }, "Mon Premier Jeu");
-
-    Scene* mainScene = new Scene("Main", { 800, 600 });
-    GameObject* carre = el->createBlock();
     
+    Engine engine({ 2000, 600 }, "Mon Premier Jeu");
 
-    mainScene->AddGameObject(carre);
+    Scene* mainScene = new Scene("Main", { 2000, 600 });
+    
+    Level level(1, 1);
+    level.Load("level.txt");
+    level.Draw(mainScene);
 
     engine.getSceneModule()->SetActiveScene(mainScene);
     mainScene->Start();

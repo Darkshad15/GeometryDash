@@ -13,4 +13,7 @@ public:
 	void logic();
 	virtual void draw(sf::RenderWindow& win);
 	GameObject* createBlock();
+	GameObject* createEmpty();
+	GameObject* createCircle();
+	GameObject* createSpike();
 };
