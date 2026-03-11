@@ -3,9 +3,9 @@
 #include "Engine.h"
 #include "Scene.h"
 class Elements
-{ 
+{
 protected:
-	int type; //1 = block, 2 = piege (le toucher = mort), 3 = special (type portail, auto jump etc)	
+	int type; //1 = block, 2 = piege (le toucher = mort), 3 = special (type portail, auto jump etc)
 	GameObject* gameObject = nullptr;
 public:
 	Elements();

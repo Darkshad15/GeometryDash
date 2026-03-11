@@ -4,6 +4,12 @@
 #include "Scene.h"
 #include "Gen.h"
 #include "Level.h"
+#include "Player.h"
+#include "Elements.h"
+#include "Engine.h"
+#include "Scene.h"
+#include "InputManager.h"
+
 int main()
 {
     
