@@ -1,5 +1,8 @@
 #include "Engine.h"
 
+
+Engine* Engine::instance = nullptr;
+
 void Engine::Start() //Lance le moteur et tous ses modules
 {
 	sceneModule->Start();
@@ -19,5 +22,6 @@ Engine::Engine() //Constructeur par défaut
 
 Engine::Engine(sf::Vector2u size,std::string name) // Constructeurs a 2 param (taille de la fenetre, nom du jeu)
 {
+	instance = this;
 	this->sceneModule = new SceneModule(size,name);
 }

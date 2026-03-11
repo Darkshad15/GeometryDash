@@ -5,36 +5,83 @@
 #include <SFML/Graphics.hpp>
 #include <windows.h>
 
+extern unsigned int screenW;
+extern unsigned int screenH;
+
+Scenes sc;
+
+void Scenes::Start()
+{
+	Engine::GetInstance()->getSceneModule()->SetActiveScene(CreateMain());
+
+}
+
 
 Scene* Scenes::CreateMain()
 {
-	Scene* mainMenu = new Scene("MainMenu", { 800, 600 });
+    Scene* mainMenu = new Scene("MainMenu", { screenW, screenH });
+   
 
-	// Titre
-	GameObject* title = new GameObject({ 300, 100 });
-	title->AddComponent(new Text("Gamuo desu !", 72, White, "../x64/Font/arial.ttf"));
-	mainMenu->AddGameObject(title);
+    // Titre centré
+    std::string titreStr = "Gamuo desu !";
+    GameObject* title = new GameObject({ CenterX(titreStr, 72, fontPath), 80.0f });
+    title->AddComponent(new Text(titreStr, 72, White, fontPath));
+    mainMenu->AddGameObject(title);
 
-	// Bouton Play
-	GameObject* btnPlay = new GameObject({ 350, 300 });
-	btnPlay->AddComponent(new Text("Jouer", 48, Green,"../x64/Font/arial.ttf"));
-	btnPlay->setClickable(true);
-	mainMenu->AddGameObject(btnPlay);
+    // Bouton Play centré
+    std::string playStr = "Jouer";
+    GameObject* btnPlay = new GameObject({ CenterX(playStr, 48, fontPath), CenterY(-50) });
+    btnPlay->AddComponent(new Text(playStr, 48, Green, fontPath));
+    btnPlay->setClickable(true);
+    mainMenu->AddGameObject(btnPlay);
 
-	return mainMenu;
+    InputManager::Initialize(&Engine::GetInstance()->getSceneModule()->getWindow());
+    InputManager::RegisterClickableObject(btnPlay, [this](GameObject* obj) {
+        Engine::GetInstance()->getSceneModule()->SetActiveScene(CreateGameover());
+        });
+
+    std::string quitStr = "Quitter";
+    GameObject* btnQuitter = new GameObject({ CenterX(quitStr, 10, fontPath), CenterY(-70) });
+    btnQuitter->AddComponent(new Text(quitStr, 10, Red, fontPath));
+    btnQuitter->setClickable(true);
+    mainMenu->AddGameObject(btnQuitter);
+
+    InputManager::Initialize(&Engine::GetInstance()->getSceneModule()->getWindow());
+    InputManager::RegisterClickableObject(btnQuitter, [this](GameObject* obj)
+        {
+            Engine::GetInstance()->ShutDown();
+        });
+
+
+    return mainMenu;
 }
 
 
 Scene* Scenes::CreatePause()
 {
-	Scene* Pause = new Scene("MainMenu", { 800, 600 });
+	Scene* Pause = new Scene("MainMenu", { screenW, screenH });
+
+    std::string pauseStr = "Pause";
 	// Titre
-	GameObject* title = new GameObject({ 300, 100 });
-	title->AddComponent(new Text("Pause", 72, White, "../x64/Font/arial.ttf"));
+	GameObject* title = new GameObject({ CenterX(pauseStr, 72, fontPath), 80.0f });
+	title->AddComponent(new Text(pauseStr, 72, White, fontPath));
 	Pause->AddGameObject(title);
 
 
 	return Pause;
 
+}
+
+Scene* Scenes::CreateGameover()
+{
+	Scene* GameOver = new Scene("Game Over" ,{800, 600});
+
+    std::string GameOverStr = "Game Over !";
+
+	GameObject* title = new GameObject({ CenterX(GameOverStr, 72, fontPath), 80.0f });
+	title->AddComponent(new Text(GameOverStr, 72, White, fontPath));
+	GameOver->AddGameObject(title);
+
+	return GameOver;
 }
 
