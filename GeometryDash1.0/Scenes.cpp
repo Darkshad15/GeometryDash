@@ -10,6 +10,37 @@ extern unsigned int screenH;
 
 Scenes sc;
 
+void Scenes::CreateButton(Scene* scene, const std::string& texte, const std::string& imagePath,
+    float posY, std::function<void(GameObject*)> onClick)
+    {
+        float scale = 0.2f;
+        float btnW = 874 * scale;   // largeur réelle affichée
+        float btnH = 320 * scale;   // hauteur réelle affichée
+
+        float btnX = (screenW / 2.0f) - (btnW / 2.0f);  // coin gauche du sprite
+        float btnY = posY - (btnH / 2.0f);               // coin haut du sprite
+
+        // Sprite
+        SpriteRenderer* sprite = new SpriteRenderer(imagePath, { 974, 320 }, { 1, 1 });
+        sprite->setAnimated(false);
+        sprite->setScale(scale);
+
+        GameObject* btn = new GameObject({ btnX, btnY });
+        btn->AddComponent(sprite);
+        btn->setClickable(true);
+        scene->AddGameObject(btn);
+
+        float txtX = CenterX(texte, 40, fontPath);
+        float txtY = btnY + (btnH / 2.0f)- 30.f;
+
+        GameObject* txt = new GameObject({ txtX, txtY });
+        txt->AddComponent(new Text(texte, 40, White, fontPath));
+        scene->AddGameObject(txt);
+
+        InputManager::RegisterClickableObject(btn, onClick);
+
+    }
+
 void Scenes::Start()
 {
 	Engine::GetInstance()->getSceneModule()->SetActiveScene(CreateMain());
@@ -20,38 +51,26 @@ void Scenes::Start()
 Scene* Scenes::CreateMain()
 {
     Scene* mainMenu = new Scene("MainMenu", { screenW, screenH });
-   
+    Scene* gameOver = CreateGameover();  // créée à l'avance
 
-    // Titre centré
+    // Titre
     std::string titreStr = "Gamuo desu !";
     GameObject* title = new GameObject({ CenterX(titreStr, 72, fontPath), 80.0f });
     title->AddComponent(new Text(titreStr, 72, White, fontPath));
     mainMenu->AddGameObject(title);
 
-    // Bouton Play centré
-    std::string playStr = "Jouer";
-    GameObject* btnPlay = new GameObject({ CenterX(playStr, 48, fontPath), CenterY(-50) });
-    btnPlay->AddComponent(new Text(playStr, 48, Green, fontPath));
-    btnPlay->setClickable(true);
-    mainMenu->AddGameObject(btnPlay);
-
     InputManager::Initialize(&Engine::GetInstance()->getSceneModule()->getWindow());
-    InputManager::RegisterClickableObject(btnPlay, [this](GameObject* obj) {
-        Engine::GetInstance()->getSceneModule()->SetActiveScene(CreateGameover());
+
+    // Boutons
+    CreateButton(mainMenu, "Jouer", "../Asset/Boutton/red_button.png", CenterY(-50), [gameOver](GameObject* obj) {
+        std::cout << "CLIC JOUER" << std::endl;
+        Engine::GetInstance()->getSceneModule()->SetActiveScene(gameOver);  
         });
 
-    std::string quitStr = "Quitter";
-    GameObject* btnQuitter = new GameObject({ CenterX(quitStr, 10, fontPath), CenterY(-70) });
-    btnQuitter->AddComponent(new Text(quitStr, 10, Red, fontPath));
-    btnQuitter->setClickable(true);
-    mainMenu->AddGameObject(btnQuitter);
-
-    InputManager::Initialize(&Engine::GetInstance()->getSceneModule()->getWindow());
-    InputManager::RegisterClickableObject(btnQuitter, [this](GameObject* obj)
-        {
-            Engine::GetInstance()->ShutDown();
+    CreateButton(mainMenu, "Quitter", "../Asset/Boutton/red_button.png", CenterY(+50), [](GameObject* obj) {
+        std::cout << "CLIC QUITTER" << std::endl;
+        Engine::GetInstance()->ShutDown();
         });
-
 
     return mainMenu;
 }

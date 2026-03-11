@@ -25,3 +25,9 @@ Engine::Engine(sf::Vector2u size,std::string name) // Constructeurs a 2 param (t
 	instance = this;
 	this->sceneModule = new SceneModule(size,name);
 }
+
+void Engine::ShutDown()
+{
+	std::cout << "Shutdown" << std::endl;
+	getSceneModule()->getWindow().close();
+}

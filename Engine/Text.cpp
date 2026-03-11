@@ -8,6 +8,8 @@ Text::Text():
 	{
 		std::cout << "Erreur de chargement de la font par defaut " << std::endl;
 	}
+	this->font.setSmooth(false);
+
 	txt = "test";
 	text.setString("test");
 	text.setFont(this->font);
@@ -23,6 +25,8 @@ Text::Text(std::string text,int size,sf::Color color,std::string font):
 	{
 		std::cout << "Erreur de chargement de la font " << font << std::endl;
 	}
+	this->font.setSmooth(false);
+
 	txt = text;
 	this->text.setString(text);
 	this->text.setFont(this->font);

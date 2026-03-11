@@ -128,6 +128,7 @@ void InputManager::ProcessInput()
             }
         }
     }
+    previousMouseStates[sf::Mouse::Button::Left] = leftMousePressed;
 }
 
 
@@ -135,34 +136,35 @@ bool InputManager::IsPointInObject(GameObject* obj, sf::Vector2f point)
 {
     if (obj == nullptr)
         return false;
-    
+
     Text* textComponent = obj->GetComponent<Text>();
     if (textComponent != nullptr)
     {
-        float x = obj->getTransform().pos.x;
-        float y = obj->getTransform().pos.y;
-        
-        float width = textComponent->getBounds().size.x;
-        float height = textComponent->getBounds().size.y;
-        
-        return (point.x >= x && point.x <= x + width &&
-                point.y >= y && point.y <= y + height);
+        sf::FloatRect bounds = textComponent->getSFText().getGlobalBounds();
+        std::cout << "TEXT bounds: pos(" << bounds.position.x << ", " << bounds.position.y
+            << ") size(" << bounds.size.x << "x" << bounds.size.y << ")" << std::endl;
+        std::cout << "Mouse: " << point.x << ", " << point.y << std::endl;
+
+        return (point.x >= bounds.position.x &&
+            point.x <= bounds.position.x + bounds.size.x &&
+            point.y >= bounds.position.y &&
+            point.y <= bounds.position.y + bounds.size.y);
     }
-    
 
     SpriteRenderer* spriteComponent = obj->GetComponent<SpriteRenderer>();
     if (spriteComponent != nullptr)
     {
-        float x = obj->getTransform().pos.x;
-        float y = obj->getTransform().pos.y;
-        
-        float width = 64;
-        float height = 64;
-        
-        return (point.x >= x && point.x <= x + width &&
-                point.y >= y && point.y <= y + height);
+        sf::FloatRect bounds = spriteComponent->getSprite().getGlobalBounds();
+        std::cout << "SPRITE bounds: pos(" << bounds.position.x << ", " << bounds.position.y
+            << ") size(" << bounds.size.x << "x" << bounds.size.y << ")" << std::endl;
+        std::cout << "Mouse: " << point.x << ", " << point.y << std::endl;
+
+        return (point.x >= bounds.position.x &&
+            point.x <= bounds.position.x + bounds.size.x &&
+            point.y >= bounds.position.y &&
+            point.y <= bounds.position.y + bounds.size.y);
     }
-    
+
     return false;
 }
 

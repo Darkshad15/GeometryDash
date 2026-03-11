@@ -90,7 +90,10 @@ void SpriteRenderer::Render(sf::RenderWindow& window)
 			}
 			else
 			{
-				sprite.setTextureRect(sf::IntRect({ 0 * size.x, 0 }, { size.x, size.x }));
+				sprite.setTextureRect(sf::IntRect(
+					{ 0, currentFrame * size.y },  
+					{ size.x, size.y }             
+				));
 			}
 		}
 		else

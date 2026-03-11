@@ -47,14 +47,15 @@ public:
 	sf::FloatRect getBounds() { return sprite.getGlobalBounds(); }
 	bool getVisible() { return visible; }
 
+	sf::Sprite& getSprite() { return sprite; }
 
 	//Set
 	void setDirection(Direction d) { direction = d; }
 	void setFond(bool B);
 	void setAnimated(bool B) { animated = B; }
 	void setVisible(bool B) { visible = B; }
-	void UpFrame() { currentFrame ++; }
-	void DownFrame() { currentFrame--; }
+	void UpFrame() { currentFrame = (currentFrame + 1) % AnimationParam[1]; }
+	void DownFrame() { currentFrame = (currentFrame - 1 + AnimationParam[1]) % AnimationParam[1]; }
 	void setScale(float f) { sprite.setScale({ f,f }); }
 
 
@@ -62,6 +63,8 @@ public:
 	void Start() override;
 	void Update() override;
 	virtual void Render(sf::RenderWindow& window) override;
+
+
 };
 
 class Text : public Component
@@ -77,6 +80,7 @@ public:
 	Text(std::string text, int size = 30, sf::Color color = sf::Color::White, std::string font = "arial.ttf");
 
 	//Get
+	sf::Text& getSFText() { return text; }
 	std::string getText() { return txt; }
 	sf::FloatRect getBounds() { return text.getLocalBounds(); }
 

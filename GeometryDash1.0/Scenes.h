@@ -12,7 +12,9 @@ class Scenes
 {
 
 private:
-	std::string fontPath = "../x64/Font/Berosong-Regular.ttf";
+	std::string fontPath = "../Asset/Font/Moonstrike.otf";
+
+
 
 	float CenterX(const std::string& texte, float taillePolice, const std::string& cheminPolice) {
 		sf::Font font(cheminPolice);  
@@ -29,8 +31,11 @@ public:
 
 	void Start();
 
+	void CreateButton(Scene* scene, const std::string& texte, const std::string& imagePath,
+		float posY, std::function<void(GameObject*)> onClick);
+
 	Scene* CreateMain();
-	Scene* CreateLevel();
+	//Scene* CreateLevel();
 	Scene* CreatePause();
 	Scene* CreateGameover();
 	
