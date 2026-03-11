@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include "Scene.h"
+#include <cstdlib>
+#include <ctime>
 class Gen
 {
 private:
@@ -20,5 +22,6 @@ public:
 	Level* getLevel() { return lvl; }
 	void GenerateLevel();
 	void DrawLevel(int index, Scene* scene);
+	void DrawAllLevels(Scene* scene);
 };
 

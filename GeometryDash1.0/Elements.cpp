@@ -43,17 +43,6 @@ GameObject* Elements::createBlock()
 	return block;
 }
 
-GameObject* Elements::createEmpty()
-{
-	GameObject* block = new GameObject({ 100,100 });
-	Shape* shape = new Shape();
-	shape->setRectangle({ 64.f, 64.f }, sf::Color(255, 255, 255, 0));
-	Variables* var = new Variables();
-	var->addInt("Type", 1);
-	type = var->getInt("Type");
-	block->AddComponent(shape);
-	return block;
-}
 
 GameObject* Elements::createCircle()
 {

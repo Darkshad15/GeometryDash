@@ -44,7 +44,12 @@ sf::FloatRect Shape::getBounds() {
 }
 
 void Shape::Render(sf::RenderWindow& window) {
+    if (!isVisible) return;
     if (currentType == Type::RECTANGLE) window.draw(rectangle);
     else if (currentType == Type::CIRCLE)    window.draw(circle);
     else if (currentType == Type::TRIANGLE)  window.draw(triangle);
+}
+
+void Shape::setVisible(bool Visible) {
+    isVisible = Visible;
 }

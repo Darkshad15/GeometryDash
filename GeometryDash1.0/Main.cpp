@@ -15,7 +15,7 @@ int main()
     Level* level = gene->getLevel();
     engine.getSceneModule()->SetActiveScene(mainScene);
     gene->GenerateLevel();
-    
+    gene->DrawAllLevels(mainScene);
     mainScene->Start();
 
     Event::CreateEvent(-1, [&level]() {

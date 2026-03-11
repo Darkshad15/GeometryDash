@@ -74,7 +74,7 @@ public:
 
 	//Constructeurs
 	Text();
-	Text(std::string text, int size = 30, sf::Color color = sf::Color::White, std::string font = "arial.ttf");
+	Text(std::string text, int size = 30, sf::Color color = sf::Color::White, std::string font = "ProtoNerdFontMono-Regular.ttf");
 
 	//Get
 	std::string getText() { return txt; }
@@ -250,7 +250,7 @@ private:
 	sf::Vector2f size;
 	sf::Color color;
 	Type currentType = Type::NONE;
-
+	bool isVisible = true;
 public:
 	Shape();
 	sf::FloatRect getBounds();
@@ -259,7 +259,7 @@ public:
 	void setRectangle(sf::Vector2f s, sf::Color c);
 	void setCircle(float radius, sf::Color c);
 	void setTriangle(float radius, sf::Color c);
-
+	void setVisible(bool Visible);
 	void Start() override;
 	void Update() override;
 	void Render(sf::RenderWindow& window);

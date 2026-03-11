@@ -45,7 +45,7 @@ void Level::Draw(Scene* scene, std::vector<std::vector<int>> part, float offsetX
             GameObject* obj = nullptr;
 
             switch (part[y][x]) {
-            case 0: obj = elem->createEmpty(); break;
+            case 0: continue;
             case 1: obj = elem->createBlock(); break;
             case 2: obj = elem->createSpike(); break;
             default: break;
@@ -77,6 +77,22 @@ void Level::Move(float deltaTime)
 {
     for (GameObject* obj : spawnedObjects)
     {
-        obj->getTransform().pos.x -= 300.f * deltaTime; // 200 pixels/seconde
+        obj->getTransform().pos.x -= 300.f * deltaTime;
+
+        
+        float x = obj->getTransform().pos.x;
+        Shape* shape = obj->GetComponent<Shape>();
+
+        if (shape != nullptr)
+        {
+            if (x < -64.f || x > 2064.f)
+                shape->setVisible(false); 
+            else
+                shape->setVisible(true);
+        }
+        if (x < -64.f || x > 2064.f)
+            obj->setActive(false);
+        else
+            obj->setActive(true);
     }
 }
