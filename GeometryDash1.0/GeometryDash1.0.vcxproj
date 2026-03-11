@@ -130,7 +130,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Downloads\GeometryDash-dev\GeometryDash-dev\GeometryDash1.0\Level.cpp" />
+    <ClCompile Include="Elements.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Player.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Downloads\GeometryDash-dev\GeometryDash-dev\GeometryDash1.0\Level.h" />
+    <ClInclude Include="Elements.h" />
+    <ClInclude Include="Player.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Downloads\GeometryDash-dev\GeometryDash-dev\Engine\Engine.vcxproj">
+      <Project>{58159b76-87a1-485b-8ff5-ac0ca169dc54}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
