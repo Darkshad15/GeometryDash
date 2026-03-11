@@ -71,7 +71,7 @@ GameObject* Elements::createSpike()
 {
 	GameObject* block = new GameObject({ 100,100 });
 	Shape* shape = new Shape();
-	shape->setTriangle({ 64.f }, sf::Color(255, 255, 255));
+	shape->setTriangle(34.f , sf::Color(255, 255, 255));
 	Variables* var = new Variables();
 	var->addInt("Type", 2);
 	type = var->getInt("Type");

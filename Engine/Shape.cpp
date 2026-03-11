@@ -32,6 +32,8 @@ void Shape::setTriangle(float radius, sf::Color c) {
     triangle.setPointCount(3); 
     triangle.setRadius(radius);
     triangle.setFillColor(c);
+    sf::FloatRect bounds = triangle.getLocalBounds();
+    triangle.setOrigin({ bounds.size.x / 2.f, 0.f });
 }
 
 sf::FloatRect Shape::getBounds() {

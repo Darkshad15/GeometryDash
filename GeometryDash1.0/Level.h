@@ -13,7 +13,7 @@ private:
 	enum class Bloc {
 		VIDE = 0,
 		MUR = 1,
-		SPAWN = 2,
+		SIKE = 2,
 		ENNEMI = 3
 	};
 	Elements* elem;
@@ -22,7 +22,8 @@ private:
 public:
 	Level(int diff, int ord);
 	~Level();
-	void Draw(Scene* scene);
+	void Draw(Scene* scene, std::vector<std::vector<int>> part, float offsetX);
+	void Move(float deltaTime);
 	std::vector<std::vector<int>> Load(const std::string& chemin);
 };
 

@@ -37,13 +37,14 @@ std::vector<std::vector<int>> Level::Load(const std::string& chemin) {
     return LevelParts;
 }
 
-void Level::Draw(Scene* scene) {
-    for (int y = 0; y < LevelParts.size(); y++) {
-        for (int x = 0; x < LevelParts[y].size(); x++) {
+
+void Level::Draw(Scene* scene, std::vector<std::vector<int>> part, float offsetX = 0.f) {
+    for (int y = 0; y < part.size(); y++) {
+        for (int x = 0; x < part[y].size(); x++) {
 
             GameObject* obj = nullptr;
 
-            switch (LevelParts[y][x]) {
+            switch (part[y][x]) {
             case 0: obj = elem->createEmpty(); break;
             case 1: obj = elem->createBlock(); break;
             case 2: obj = elem->createSpike(); break;
@@ -51,10 +52,31 @@ void Level::Draw(Scene* scene) {
             }
 
             if (obj) {
-                obj->SetPosition({ (float)x * 64, (float)y * 64 });
-                scene->AddGameObject(obj); 
+                float posX = (float)x * 64 + offsetX;
+                float posY = (float)y * 64;
+
+                
+                if (part[y][x] == 2) {
+                    Shape* shape = obj->GetComponent<Shape>();
+                    if (shape) {
+                        sf::FloatRect bounds = shape->getBounds();
+                        posX = (float)x * 64 + 28.f + offsetX;
+                        posY = (float)(y + 1) * 64 - bounds.size.y;
+                    }
+                }
+
+                obj->SetPosition({ posX, posY });
+                scene->AddGameObject(obj);
                 spawnedObjects.push_back(obj);
             }
         }
+    }
+}
+
+void Level::Move(float deltaTime)
+{
+    for (GameObject* obj : spawnedObjects)
+    {
+        obj->getTransform().pos.x -= 300.f * deltaTime; // 200 pixels/seconde
     }
 }

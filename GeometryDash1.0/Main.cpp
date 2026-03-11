@@ -2,23 +2,31 @@
 #include "Elements.h"
 #include "Engine.h"
 #include "Scene.h"
-
+#include "Gen.h"
 #include "Level.h"
 int main()
 {
     
-    Engine engine({ 2000, 600 }, "Mon Premier Jeu");
+    Engine engine({ 1500, 600 }, "Mon Premier Jeu");
 
-    Scene* mainScene = new Scene("Main", { 2000, 600 });
+    Scene* mainScene = new Scene("Main", { 1500, 600 });
     
-    Level level(1, 1);
-    level.Load("level.txt");
-    level.Draw(mainScene);
-
+    Gen* gene = new Gen(mainScene);
+    Level* level = gene->getLevel();
     engine.getSceneModule()->SetActiveScene(mainScene);
+    gene->GenerateLevel();
+    
     mainScene->Start();
-    engine.Start();
 
+    Event::CreateEvent(-1, [&level]() {
+        static sf::Clock clock;
+        float deltaTime = clock.restart().asSeconds();
+        level->Move(deltaTime);
+        });
+
+
+    engine.Start();
+    
     return 0;
 
 }

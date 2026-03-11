@@ -131,11 +131,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Elements.cpp" />
+    <ClCompile Include="Gen.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Elements.h" />
+    <ClInclude Include="Gen.h" />
     <ClInclude Include="Level.h" />
   </ItemGroup>
   <ItemGroup>
