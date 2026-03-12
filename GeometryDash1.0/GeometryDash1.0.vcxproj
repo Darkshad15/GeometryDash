@@ -130,8 +130,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\Downloads\GeometryDash-dev\GeometryDash-dev\GeometryDash1.0\Level.cpp" />
-    <ClCompile Include="Elements.cpp" />
     <ClCompile Include="Elements.cpp" />
     <ClCompile Include="Gen.cpp" />
     <ClCompile Include="Level.cpp" />
@@ -140,7 +138,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Downloads\GeometryDash-dev\GeometryDash-dev\GeometryDash1.0\Level.h" />
-    <ClInclude Include="Elements.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>
   <ItemGroup>

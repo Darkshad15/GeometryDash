@@ -164,15 +164,18 @@ private:
 	std::map<std::string, float> floats;
 	std::map<std::string, double> doubles;
 	std::map<std::string, std::string> strings;
+	std::map<std::string, bool> bools;
 public:
 	void addInt(std::string name, int value);
 	void addFloat(std::string name, float value);
 	void addDouble(std::string name, double value);
 	void addString(std::string name, std::string value);
-
+	void addBool(std::string name, bool value);
+	void setFloat(std::string name, float value) { if (floats.find(name) != floats.end()) { floats[name] = value; } };
 	int getInt(std::string name) {{if (integers.find(name) != integers.end()) {return integers[name];} return 0;}};
 	float getFloat(std::string name) {{if(floats.find(name) != floats.end()) { return floats[name]; } return 0;}};
 	double getDouble(std::string name) {{if(doubles.find(name) != doubles.end()) { return doubles[name];} return 0;}};
+	bool getBool(std::string name) { { if (bools.find(name) != bools.end()) { return bools[name]; } return 0; } };
 	void PlusInt(std::string name, int i) { if (integers.find(name) != integers.end()) { integers[name] += i; } };
 	void MinusInt(std::string name, int i) { if (integers.find(name) != integers.end()) { integers[name] -= i; } };
 	std::string getString(std::string name) {{if(strings.find(name) != strings.end()) { return strings[name]; } return "NUL"; } };
@@ -231,8 +234,8 @@ public:
 	void StartClock();
 	void StopClock();
 	void ResetClock();
+	void RestartClock();
 	float GetTimeSinceStart() { return clock.getElapsedTime().asSeconds(); };
-	
 
 	void Start() override {}
 	void Update() override {}

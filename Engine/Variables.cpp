@@ -16,3 +16,8 @@ void Variables::addString(std::string name, std::string value) {
     strings[name] = value;
 }
 
+void Variables::addBool(std::string name, bool value)
+{
+    bools[name] = value;
+}
+

@@ -18,7 +18,17 @@ int main()
     Scene* mainScene = new Scene("Main", { 1500, 600 });
     
     Gen* gene = new Gen(mainScene);
+    Elements* el = new Elements();
     Level* level = gene->getLevel();
+
+    InputManager::Initialize(&engine.getSceneModule()->getWindow());
+    GameObject* player = new GameObject({ 100.f,300.f });
+    player = createPlayer();
+    MovePl(player, mainScene);
+    updColision(player, el);
+    
+    mainScene->AddGameObject(player);
+
     engine.getSceneModule()->SetActiveScene(mainScene);
     gene->GenerateLevel();
     gene->DrawAllLevels(mainScene);
