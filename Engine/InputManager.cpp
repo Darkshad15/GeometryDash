@@ -7,6 +7,10 @@ std::map<std::string, EventCallback> InputManager::keyPressCallbacks;
 std::map<std::string, EventCallback> InputManager::keyHoldCallbacks;
 std::map<std::string, bool> InputManager::previousKeyStates;
 
+std::map<GameObject*, ClickableCallback> InputManager::objectHoverEnterCallbacks;
+std::map<GameObject*, ClickableCallback> InputManager::objectHoverExitCallbacks;
+std::map<GameObject*, bool> InputManager::objectHoverStates;
+
 std::map<sf::Mouse::Button, bool> InputManager::previousMouseStates;
 
 
@@ -49,12 +53,13 @@ sf::Vector2f InputManager::GetMousePosition()
 {
     if (windowRef == nullptr)
         return sf::Vector2f(0, 0);
-    
-    sf::Vector2i pixelPos = sf::Mouse::getPosition(*windowRef);
-    sf::Vector2f worldPos = windowRef->mapPixelToCoords(pixelPos);
-    return worldPos;
-}
 
+    sf::Vector2i pixelPos = sf::Mouse::getPosition(*windowRef);
+    sf::Vector2i absPos = sf::Mouse::getPosition();  // position absolue écran
+    sf::Vector2i winPos = windowRef->getPosition();  // position de la fenêtre
+
+    return sf::Vector2f((float)pixelPos.x, (float)pixelPos.y);
+}
 
 void InputManager::RegisterClickableObject(GameObject* obj, ClickableCallback callback)
 {
@@ -83,6 +88,17 @@ void InputManager::UnregisterClickableObject(GameObject* obj)
     objectClickCallbacks.erase(obj);
 }
 
+void InputManager::RegisterHoverObject(GameObject* obj, ClickableCallback onEnter, ClickableCallback onExit)
+{
+    if (obj == nullptr)
+        return;
+
+    objectHoverEnterCallbacks[obj] = onEnter;
+    objectHoverExitCallbacks[obj] = onExit;
+    objectHoverStates[obj] = false;
+}
+
+
 void InputManager::ProcessInput()
 {
     for (auto& [key, callback] : keyHoldCallbacks)
@@ -106,7 +122,32 @@ void InputManager::ProcessInput()
         if(previousKeyStates.contains(key))
             previousKeyStates[key] = currentState;
     }
+
     
+    sf::Vector2f mousePos = GetMousePosition();
+    for (GameObject* obj : clickableObjects)
+    {
+        if (obj == nullptr) continue;
+        
+        bool isHovered = IsPointInObject(obj, mousePos);
+        bool wasHovered = objectHoverStates[obj];
+
+        if (isHovered && !wasHovered)
+        {
+            objectHoverStates[obj] = true;
+            auto it = objectHoverEnterCallbacks.find(obj);
+            if (it != objectHoverEnterCallbacks.end())
+                it->second(obj);
+        }
+        else if (!isHovered && wasHovered)
+        {
+            objectHoverStates[obj] = false;
+            auto it = objectHoverExitCallbacks.find(obj);
+            if (it != objectHoverExitCallbacks.end())
+                it->second(obj);
+        }
+    }
+
     
     bool leftMousePressed = IsMouseButtonPressed(sf::Mouse::Button::Left);
     bool wasLeftMousePressed = previousMouseStates[sf::Mouse::Button::Left];
@@ -141,10 +182,6 @@ bool InputManager::IsPointInObject(GameObject* obj, sf::Vector2f point)
     if (textComponent != nullptr)
     {
         sf::FloatRect bounds = textComponent->getSFText().getGlobalBounds();
-        std::cout << "TEXT bounds: pos(" << bounds.position.x << ", " << bounds.position.y
-            << ") size(" << bounds.size.x << "x" << bounds.size.y << ")" << std::endl;
-        std::cout << "Mouse: " << point.x << ", " << point.y << std::endl;
-
         return (point.x >= bounds.position.x &&
             point.x <= bounds.position.x + bounds.size.x &&
             point.y >= bounds.position.y &&
@@ -155,9 +192,6 @@ bool InputManager::IsPointInObject(GameObject* obj, sf::Vector2f point)
     if (spriteComponent != nullptr)
     {
         sf::FloatRect bounds = spriteComponent->getSprite().getGlobalBounds();
-        std::cout << "SPRITE bounds: pos(" << bounds.position.x << ", " << bounds.position.y
-            << ") size(" << bounds.size.x << "x" << bounds.size.y << ")" << std::endl;
-        std::cout << "Mouse: " << point.x << ", " << point.y << std::endl;
 
         return (point.x >= bounds.position.x &&
             point.x <= bounds.position.x + bounds.size.x &&

@@ -17,6 +17,12 @@ SpriteRenderer::SpriteRenderer(std::string s,sf::Vector2i size, std::array<int, 
 	setId(id);
 }
 
+void SpriteRenderer::setCenterOrigin()
+{
+	sf::FloatRect bounds = sprite.getLocalBounds();
+	sprite.setOrigin({ bounds.size.x / 2.0f, bounds.size.y / 2.0f });
+}
+
 void SpriteRenderer::Start()
 {
 	if (!texture.loadFromFile(texturePath)) {

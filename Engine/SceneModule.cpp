@@ -6,7 +6,7 @@
 SceneModule::SceneModule()
 {
 	name = "default";
-	window = sf::RenderWindow(sf::VideoMode({800,800}), "default");
+	window = sf::RenderWindow(sf::VideoMode({800,600}), "default");
 	window.setFramerateLimit(60);
 }
 
@@ -21,6 +21,14 @@ void SceneModule::SetActiveScene(Scene* scene)
 {
 	activeScene = scene;
 	window.setSize(scene->getSize());
+
+	// Mettre à jour la vue pour correspondre à la nouvelle taille
+	sf::View view(sf::FloatRect(
+		{ 0.f, 0.f },
+		{ (float)scene->getSize().x, (float)scene->getSize().y }
+	));
+	window.setView(view);
+
 	window.setTitle(name+" : "+scene->getName());
 }
 

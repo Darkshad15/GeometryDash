@@ -57,7 +57,7 @@ public:
 	void UpFrame() { currentFrame = (currentFrame + 1) % AnimationParam[1]; }
 	void DownFrame() { currentFrame = (currentFrame - 1 + AnimationParam[1]) % AnimationParam[1]; }
 	void setScale(float f) { sprite.setScale({ f,f }); }
-
+	void setCenterOrigin();
 
 	//Autres
 	void Start() override;

@@ -9,37 +9,55 @@ extern unsigned int screenW;
 extern unsigned int screenH;
 
 Scenes sc;
-
 void Scenes::CreateButton(Scene* scene, const std::string& texte, const std::string& imagePath,
     float posY, std::function<void(GameObject*)> onClick)
-    {
-        float scale = 0.2f;
-        float btnW = 874 * scale;   // largeur réelle affichée
-        float btnH = 320 * scale;   // hauteur réelle affichée
+{
+    float scale = 0.2f;
+    float btnW = 874 * scale;  
+    float btnH = 320 * scale;  
+    float btnX = (screenW / 2.0f) - (btnW / 2.0f);  // 312.6
+    float btnY = posY - (btnH / 2.0f);
 
-        float btnX = (screenW / 2.0f) - (btnW / 2.0f);  // coin gauche du sprite
-        float btnY = posY - (btnH / 2.0f);               // coin haut du sprite
+    SpriteRenderer* sprite = new SpriteRenderer(imagePath, { 874, 320 }, { 1, 1 });  
+    sprite->setAnimated(false);
+    sprite->setScale(scale);
 
-        // Sprite
-        SpriteRenderer* sprite = new SpriteRenderer(imagePath, { 974, 320 }, { 1, 1 });
-        sprite->setAnimated(false);
-        sprite->setScale(scale);
+    GameObject* btn = new GameObject({ btnX, btnY });
+    btn->AddComponent(sprite);
+    btn->setClickable(true);
+    scene->AddGameObject(btn);
 
-        GameObject* btn = new GameObject({ btnX, btnY });
-        btn->AddComponent(sprite);
-        btn->setClickable(true);
-        scene->AddGameObject(btn);
+    // Texte centré
+    sf::Font font(fontPath);
+    sf::Text sfText(font, texte, 40);
+    auto txtBounds = sfText.getLocalBounds();
+    float txtX = (screenW / 2.0f) - (txtBounds.size.x / 2.0f) - txtBounds.position.x;
+    float txtY = posY - (txtBounds.size.y / 2.0f) - txtBounds.position.y;
 
-        float txtX = CenterX(texte, 40, fontPath);
-        float txtY = btnY + (btnH / 2.0f)- 30.f;
+    GameObject* txt = new GameObject({ txtX, txtY });
+    txt->AddComponent(new Text(texte, 40, White, fontPath));
+    txt->setClickable(true);
+    scene->AddGameObject(txt);
 
-        GameObject* txt = new GameObject({ txtX, txtY });
-        txt->AddComponent(new Text(texte, 40, White, fontPath));
-        scene->AddGameObject(txt);
+    InputManager::RegisterClickableObject(btn, onClick);
+    InputManager::RegisterClickableObject(txt, onClick);
 
-        InputManager::RegisterClickableObject(btn, onClick);
-
-    }
+    InputManager::RegisterHoverObject(btn,
+        [btn, sprite, btnX, btnY, btnH](GameObject* obj) {
+            float newScale = 0.23f;
+            float newW = 874 * newScale;
+            float newH = 320 * newScale;
+            sprite->setScale(newScale);
+            btn->getTransform().pos.x = (screenW / 2.0f) - (newW / 2.0f);  // recentre X
+            btn->getTransform().pos.y = btnY - ((newH - btnH) / 2.0f);      // recentre Y
+        },
+        [btn, sprite, btnX, btnY](GameObject* obj) {
+            sprite->setScale(0.2f);
+            btn->getTransform().pos.x = btnX;  // remet position originale
+            btn->getTransform().pos.y = btnY;
+        }
+    );
+}
 
 void Scenes::Start()
 {
@@ -64,12 +82,16 @@ Scene* Scenes::CreateMain()
     // Boutons
     CreateButton(mainMenu, "Jouer", "../Asset/Boutton/red_button.png", CenterY(-50), [gameOver](GameObject* obj) {
         std::cout << "CLIC JOUER" << std::endl;
-        Engine::GetInstance()->getSceneModule()->SetActiveScene(gameOver);  
+        
+
+        Engine::GetInstance()->getSceneModule()->SetActiveScene(gameOver);
+        InputManager::Clear();
         });
 
     CreateButton(mainMenu, "Quitter", "../Asset/Boutton/red_button.png", CenterY(+50), [](GameObject* obj) {
         std::cout << "CLIC QUITTER" << std::endl;
         Engine::GetInstance()->ShutDown();
+        InputManager::Clear();
         });
 
     return mainMenu;
@@ -93,14 +115,19 @@ Scene* Scenes::CreatePause()
 
 Scene* Scenes::CreateGameover()
 {
-	Scene* GameOver = new Scene("Game Over" ,{800, 600});
-
+    Scene* GameOver = new Scene("Game Over", { 800, 600 });
     std::string GameOverStr = "Game Over !";
 
-	GameObject* title = new GameObject({ CenterX(GameOverStr, 72, fontPath), 80.0f });
-	title->AddComponent(new Text(GameOverStr, 72, White, fontPath));
-	GameOver->AddGameObject(title);
+    // Background
+    GameObject* background = new GameObject();
+    background->AddComponent(new Sprite("../Assets/GameOver/background.png"));
+    background->setPosition(0, 0);
+    GameOver->AddGameObject(background);  
 
-	return GameOver;
+    // Titre
+    GameObject* title = new GameObject({ CenterX(GameOverStr, 72, fontPath), 80.0f });
+    title->AddComponent(new Text(GameOverStr, 72, White, fontPath));
+    GameOver->AddGameObject(title);
+
+    return GameOver;
 }
-
