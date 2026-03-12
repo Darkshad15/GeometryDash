@@ -82,7 +82,6 @@ Scene* Scenes::CreateMain()
     // Boutons
     CreateButton(mainMenu, "Jouer", "../Asset/Boutton/red_button.png", CenterY(-50), [gameOver](GameObject* obj) {
         std::cout << "CLIC JOUER" << std::endl;
-        
 
         Engine::GetInstance()->getSceneModule()->SetActiveScene(gameOver);
         InputManager::Clear();
@@ -108,26 +107,39 @@ Scene* Scenes::CreatePause()
 	title->AddComponent(new Text(pauseStr, 72, White, fontPath));
 	Pause->AddGameObject(title);
 
-
 	return Pause;
 
 }
 
 Scene* Scenes::CreateGameover()
 {
-    Scene* GameOver = new Scene("Game Over", { 800, 600 });
+    Scene* GameOver = new Scene("Game Over", { screenW, screenH });
     std::string GameOverStr = "Game Over !";
 
-    // Background
-    GameObject* background = new GameObject();
-    background->AddComponent(new Sprite("../Assets/GameOver/background.png"));
-    background->setPosition(0, 0);
-    GameOver->AddGameObject(background);  
+    GameObject* background = new GameObject({ 0, 0 });
+    SpriteRenderer* bgSprite = new SpriteRenderer(
+        "../Asset/GameOver/background.png",
+        { 1284 , 1074},
+        { 1, 1 }
+    );
+
+    sf::Vector2u winSize = Engine::GetInstance()->getSceneModule()->getWindow().getSize();
+    float scaleX = winSize.x / 1890.f;
+    float scaleY = winSize.y / 1417.f;
+    float scale = std::max(scaleX, scaleY);
+
+    bgSprite->setScale(scale);
+    bgSprite->setFond(true);    
+    background->AddComponent(bgSprite);
+    GameOver->AddGameObject(background);
+    background->Start();
+
 
     // Titre
     GameObject* title = new GameObject({ CenterX(GameOverStr, 72, fontPath), 80.0f });
     title->AddComponent(new Text(GameOverStr, 72, White, fontPath));
     GameOver->AddGameObject(title);
+    title->Start();
 
     return GameOver;
 }

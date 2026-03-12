@@ -105,11 +105,11 @@ void SpriteRenderer::Render(sf::RenderWindow& window)
 		else
 		{
 			static float scroll = 0.0f;
-			scroll -= 0.005f;
+			scroll -= 0.008f;
 			if (scroll >= size.y)
 				scroll = 0.0f;
 
-			sprite.setTextureRect(sf::IntRect({ 0, static_cast<int>(scroll) }, { 800, 800 }));
+			sprite.setTextureRect(sf::IntRect({ 0, static_cast<int>(scroll) }, { size.x , size.y  }));
 		}
 	}
 	else
@@ -126,6 +126,6 @@ void SpriteRenderer::setFond(bool B)
 {
 	 texture.setRepeated(B); 
 	 sprite.setTexture(texture);
-	 sprite.setTextureRect(sf::IntRect({ 0,0 }, { 800,-5000 }));
+
 
 }
