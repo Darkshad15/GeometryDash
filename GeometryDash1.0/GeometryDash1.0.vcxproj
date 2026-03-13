@@ -137,7 +137,6 @@
     <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Downloads\GeometryDash-dev\GeometryDash-dev\GeometryDash1.0\Level.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>
   <ItemGroup>

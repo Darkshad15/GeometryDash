@@ -3,72 +3,105 @@
 
 GameObject* createPlayer()
 {
-    GameObject* player = new GameObject({ 200, 400 });
-    Shape* sprite = new Shape();
-    Variables* var = new Variables();
-    Collider* col = new Collider(); 
+	GameObject* player = new GameObject({ 200,200 });
+	Shape* sprite = new Shape();
+	Variables* var = new Variables();
+	Collider* collider = new Collider();
+	sprite->setRectangle({ 64.f,64.f }, sf::Color::Blue);
+	player->AddComponent(sprite);
+	player->AddComponent(collider);
+	player->AddComponent(var);
+	var->addFloat("velocityY", 0.0f);
+	var->addFloat("gravity", 0.485f);
+	var->addFloat("jumpForce", -12.0f);
+	var->addFloat("groundY", 400.0f);    // Sol temporaire
+	var->addFloat("isGrounded", 0.0f); //1.0f au sol , 0.0f en l'air
+	return player;
 
-    sprite->setRectangle({ 64.f, 64.f }, sf::Color::Green);
-    var->addFloat("speed", 2.0f);
-    var->addFloat("velocityY", 0.0f);
-    var->addFloat("gravity", 980.f);
-    var->addFloat("jumpForce", -500.f);
-    var->addBool("grounded", false);
-    NewClock* clk = new NewClock();
-    
-    player->AddComponent(clk);
-    player->AddComponent(sprite);
-    player->AddComponent(col);
-    player->AddComponent(var);
-    return player;
 }
 
-void MovePl(GameObject* player, Scene* scene)
-{
-    // Saut
-    InputManager::RegisterKeyPress("Space", [player]()
-        {
-            Variables* var = player->GetComponent<Variables>();
-            if (var != nullptr) {
-                var->setFloat("velocityY", var->getFloat("jumpForce"));
-                std::cout << "Le joueur saute" << std::endl;
-            }
-        });
+void MovePl(GameObject* player, Scene* scene) {
 
-    Event::CreateEvent(-2, [player, scene]()
-        {
-            if (player == nullptr || !player->getActive() || player->GetComponent<Variables>()->getBool("grounded")) return;
+	InputManager::RegisterKeyPress("Space", [player]()
+		{
+			Variables* var = player->GetComponent<Variables>();
+			if (var != nullptr && var->getFloat("isGrounded") == 1.0f) {
+				var->setFloat("velocityY", var->getFloat("jumpForce"));
+				var->setFloat("isGrounded", 0.0f);
+				std::cout << "Le joueur saute" << std::endl;
+			}
+		});
 
-            Variables* var = player->GetComponent<Variables>();
-            NewClock* clk = player->GetComponent<NewClock>();
-            if (var == nullptr || clk == nullptr) return;
+	Event::CreateEvent(-1, [player, scene]()
+		{
+			if (player != nullptr && player->getActive())
+			{
+				Variables* var = player->GetComponent<Variables>();
 
-            float deltaTime = clk->GetTimeSinceStart();
-            clk->RestartClock(); 
-            
-            deltaTime = std::min(deltaTime, 0.05f);
+				if (var != nullptr) {
+					float velocityY = var->getFloat("velocityY");
+					float gravity = var->getFloat("gravity");
 
-            float velocityY = var->getFloat("velocityY");
-            float gravity = var->getFloat("gravity");
+					velocityY += gravity;
+					float nextY = player->getTransform().pos.y + velocityY;
 
-            velocityY += gravity * deltaTime;
-            player->getTransform().pos.y += velocityY * deltaTime;
+					// Dimensions du joueur
+					float px = player->getTransform().pos.x;
+					float py = player->getTransform().pos.y;
+					float pw = 64.f;
+					float ph = 64.f;
 
-            var->setFloat("velocityY", velocityY);
-        });
-    
-}
-void updColision(GameObject* player, Elements* elem)
-{
-    Event::CreateEvent(-3, [player, elem] {
-        
-        Collider* playerCol = player->GetComponent<Collider>();
-        Collider* blockCol = elem->createBlock()->GetComponent<Collider>();
+					bool touchGround = false;
+					bool isDead = false; // On ajoute un marqueur de mort
 
-        if (playerCol->DoesCollide(elem->createBlock())) {
-            player->GetComponent<Variables>()->addBool("grounded", true);
-        }
-        
-        
-        });
+					for (GameObject* obj : scene->getLstObj()) {
+						if (obj != player && obj->getActive() && obj->GetComponent<Collider>() != nullptr) {
+
+							// Dimensions du bloc
+							float bx = obj->getTransform().pos.x;
+							float by = obj->getTransform().pos.y;
+							float bw = 64.f;
+							float bh = 64.f;
+
+							// On vérifie si on est aligné horizontalement avec le bloc (pour ignorer les fissures)
+							bool overlapX = (px + pw > bx + 5.f && px < bx + bw - 5.f);
+
+							if (overlapX) {
+
+
+								if (velocityY > 0.0f && py + ph <= by + 15.f && nextY + ph >= by) {
+									nextY = by - ph;     // On se pose pile sur le bloc
+									velocityY = 0.0f;    // On arrête de tomber
+									touchGround = true;  // On valide le sol pour pouvoir sauter
+								}
+								//Si on n'a pas atterri, on regarde si on rentre dans le bloc
+								else if (nextY + ph > by + 5.f && nextY < by + bh - 5.f) {
+									isDead = true;
+								}
+							}
+						}
+					}
+
+					// Game over
+					if (isDead) {
+						std::cout << "Mur ou pic percuté ! Mort du joueur." << std::endl;
+
+						// On déclenche l'Event 1 qui gère le nettoyage et le restart dans Main.cpp
+						Event::SetEventTrue(1);
+					}
+					else {
+						// On applique la nouvelle position UNIQUEMENT si le joueur est en vie
+						player->getTransform().pos.y = nextY;
+						var->setFloat("velocityY", velocityY);
+					}
+
+					if (touchGround) {
+						var->setFloat("isGrounded", 1.0f);
+					}
+					else {
+						var->setFloat("isGrounded", 0.0f);
+					}
+				}
+			}
+		});
 }
