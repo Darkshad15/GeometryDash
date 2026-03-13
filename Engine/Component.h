@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 
+
 class GameObject;
 
 class Component
@@ -242,3 +243,4 @@ public:
 	void Update() override {}
 	void Render(sf::RenderWindow& window) override {}
 };
+

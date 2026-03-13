@@ -47,21 +47,27 @@ void SceneModule::Start()
 
 void SceneModule::Update()
 {
-	while (window.isOpen())
-	{
+    while (window.isOpen())
+    {
+        while (const std::optional event = window.pollEvent())
+        {
+            if (event->is<sf::Event::Closed>())
+                window.close();
+        }
 
-		while (const std::optional event = window.pollEvent())
-		{
-			if (event->is<sf::Event::Closed>())
-				window.close();
-		}
-		InputManager::ProcessInput();
-		Event::ProcessEvent();
+        if (pendingScene != nullptr)
+        {
+            InputManager::Clear();
+            SetActiveScene(pendingScene);
+            pendingScene->Start();
+            pendingScene = nullptr;
+        }
 
-		window.clear();
+        InputManager::ProcessInput();  
+        Event::ProcessEvent();
 
-		if (activeScene != nullptr)
-			activeScene->Update(window);
-
-	}
+        window.clear();
+        if (activeScene != nullptr)
+            activeScene->Update(window);
+    }
 }

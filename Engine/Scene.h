@@ -16,6 +16,9 @@ private:
 	GameObject* player = nullptr;
 	GameObject* LvLData = nullptr;
 
+	std::vector<std::function<void()>> onStartCallbacks;
+
+
 	
 
 public:
@@ -43,6 +46,8 @@ public:
 	void Start();
 	void Update(sf::RenderWindow& window);
 	void Render(sf::RenderWindow& window);
+
+	void AddOnStartCallback(std::function<void()> callback) { onStartCallbacks.push_back(callback); }
 
 	void CleanupDestroyedObjects();
 	

@@ -130,12 +130,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Boutton.cpp" />
+    <ClCompile Include="DelayedSkull.cpp" />
     <ClCompile Include="Elements.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Scenes.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Boutton.h" />
+    <ClInclude Include="DelayedSkull.h" />
     <ClInclude Include="Elements.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="Scenes.h" />

@@ -8,6 +8,15 @@ extern unsigned int screenW;
 extern unsigned int screenH;
 
 
+struct GameOverData {
+	Scene* scene;
+};
+
+
+struct MainData {
+	Scene* scene;
+};
+
 class Scenes
 {
 
@@ -32,13 +41,13 @@ public:
 	void Start();
 
 	void CreateButton(Scene* scene, const std::string& texte, const std::string& imagePath,
-		float posY, std::function<void(GameObject*)> onClick);
+		float posY, std::function<void(GameObject*)> onClick, float delay = 0.f);
 
-	Scene* CreateMain();
-	//Scene* CreateLevel();
+	MainData CreateMain();
+
 	Scene* CreatePause();
-	Scene* CreateGameover();
-	
+
+	GameOverData CreateGameover(MainData mainData);
 
 };
 

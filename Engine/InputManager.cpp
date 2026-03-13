@@ -155,7 +155,18 @@ void InputManager::ProcessInput()
     if (leftMousePressed && !wasLeftMousePressed)
     {
         sf::Vector2f mousePos = GetMousePosition();
-        
+        std::cout << "Clic! pos: " << mousePos.x << "," << mousePos.y << " nb objets: " << clickableObjects.size() << std::endl;
+
+        for (GameObject* obj : clickableObjects)
+        {
+            if (obj != nullptr)
+                std::cout << "obj clickable: " << obj->getClickable()
+                << " inBounds: " << IsPointInObject(obj, mousePos)
+                << " pos: " << obj->getTransform().pos.x << "," << obj->getTransform().pos.y
+                << " hasCallback: " << (objectClickCallbacks.find(obj) != objectClickCallbacks.end())
+                << std::endl;
+        }
+
         for (GameObject* obj : clickableObjects)
         {
             if (obj != nullptr && IsPointInObject(obj, mousePos) && obj->getClickable() == true)
@@ -175,7 +186,7 @@ void InputManager::ProcessInput()
 
 bool InputManager::IsPointInObject(GameObject* obj, sf::Vector2f point)
 {
-    if (obj == nullptr)
+    if (obj == nullptr || !obj->getClickable()) 
         return false;
 
     Text* textComponent = obj->GetComponent<Text>();
@@ -218,6 +229,11 @@ void InputManager::Clear()
     clickableObjects.clear();
     objectClickCallbacks.clear();
     previousMouseStates.clear();
+
+    objectHoverStates.clear();
+    objectHoverEnterCallbacks.clear();
+    objectHoverExitCallbacks.clear();
+
 }
 
 sf::Keyboard::Key InputManager::StringToKey(const std::string& key)

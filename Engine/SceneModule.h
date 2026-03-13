@@ -11,6 +11,10 @@ private:
 	Scene* activeScene;
 	sf::RenderWindow window;
 	std::string name;
+
+	Scene* pendingScene = nullptr;  
+	bool sceneChanged = false;
+
 public:
 
 	//Constructeurs
@@ -23,6 +27,7 @@ public:
 
 	//Set
 	void SetActiveScene(Scene* scene);
+	void SetPendingScene(Scene* scene) { pendingScene = scene;  sceneChanged = true;}
 
 	//Autres
 	void Start();

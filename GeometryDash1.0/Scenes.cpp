@@ -2,20 +2,30 @@
 #include "SceneModule.h"
 #include "Engine.h"
 #include "Color.h"
+#include "Blink.h"
+#include "DelayedMusic.h"
+#include "DelayedSkull.h"
+#include "Boutton.h"
+
 #include <SFML/Graphics.hpp>
 #include <windows.h>
+#include <thread>
+#include <chrono>
+
+
 
 extern unsigned int screenW;
 extern unsigned int screenH;
 
 Scenes sc;
+
 void Scenes::CreateButton(Scene* scene, const std::string& texte, const std::string& imagePath,
-    float posY, std::function<void(GameObject*)> onClick)
+    float posY, std::function<void(GameObject*)> onClick, float delay   )
 {
     float scale = 0.2f;
     float btnW = 874 * scale;  
     float btnH = 320 * scale;  
-    float btnX = (screenW / 2.0f) - (btnW / 2.0f);  // 312.6
+    float btnX = (screenW / 2.0f) - (btnW / 2.0f);  
     float btnY = posY - (btnH / 2.0f);
 
     SpriteRenderer* sprite = new SpriteRenderer(imagePath, { 874, 320 }, { 1, 1 });  
@@ -42,34 +52,43 @@ void Scenes::CreateButton(Scene* scene, const std::string& texte, const std::str
     InputManager::RegisterClickableObject(btn, onClick);
     InputManager::RegisterClickableObject(txt, onClick);
 
-    InputManager::RegisterHoverObject(btn,
-        [btn, sprite, btnX, btnY, btnH](GameObject* obj) {
-            float newScale = 0.23f;
-            float newW = 874 * newScale;
-            float newH = 320 * newScale;
-            sprite->setScale(newScale);
-            btn->getTransform().pos.x = (screenW / 2.0f) - (newW / 2.0f);  // recentre X
-            btn->getTransform().pos.y = btnY - ((newH - btnH) / 2.0f);      // recentre Y
-        },
-        [btn, sprite, btnX, btnY](GameObject* obj) {
-            sprite->setScale(0.2f);
-            btn->getTransform().pos.x = btnX;  // remet position originale
-            btn->getTransform().pos.y = btnY;
-        }
-    );
+    scene->AddOnStartCallback([btn, txt, onClick, btn_sprite = sprite, btnX, btnY, btnH]() {
+        InputManager::RegisterClickableObject(btn, onClick);
+        InputManager::RegisterClickableObject(txt, onClick);
+        InputManager::RegisterHoverObject(btn,
+            [btn, btn_sprite, btnX, btnY, btnH](GameObject* obj) {
+                float newScale = 0.23f;
+                float newW = 874 * newScale;
+                float newH = 320 * newScale;
+                btn_sprite->setScale(newScale);
+                btn->getTransform().pos.x = (screenW / 2.0f) - (newW / 2.0f);
+                btn->getTransform().pos.y = btnY - ((newH - btnH) / 2.0f);
+            },
+            [btn, btn_sprite, btnX, btnY](GameObject* obj) {
+                btn_sprite->setScale(0.2f);
+                btn->getTransform().pos.x = btnX;
+                btn->getTransform().pos.y = btnY;
+            }
+        );
+        });
+    if (delay > 0.f) {
+        btn->AddComponent(new DelayedButton(delay, txt)); 
+   
+    }
 }
 
 void Scenes::Start()
 {
-	Engine::GetInstance()->getSceneModule()->SetActiveScene(CreateMain());
+    MainData mainData = CreateMain();
+    Engine::GetInstance()->getSceneModule()->SetActiveScene(mainData.scene);
 
 }
 
 
-Scene* Scenes::CreateMain()
+MainData Scenes::CreateMain()
 {
     Scene* mainMenu = new Scene("MainMenu", { screenW, screenH });
-    Scene* gameOver = CreateGameover();  // créée à l'avance
+    GameOverData goData = CreateGameover({ mainMenu });   // créée à l'avance
 
     // Titre
     std::string titreStr = "Gamuo desu !";
@@ -78,22 +97,20 @@ Scene* Scenes::CreateMain()
     mainMenu->AddGameObject(title);
 
     InputManager::Initialize(&Engine::GetInstance()->getSceneModule()->getWindow());
-
-    // Boutons
-    CreateButton(mainMenu, "Jouer", "../Asset/Boutton/red_button.png", CenterY(-50), [gameOver](GameObject* obj) {
-        std::cout << "CLIC JOUER" << std::endl;
-
-        Engine::GetInstance()->getSceneModule()->SetActiveScene(gameOver);
-        InputManager::Clear();
+    CreateButton(mainMenu, "Jouer", "../Asset/Boutton/red_button.png", CenterY(-50),
+        [goData](GameObject* obj) {
+            std::cout << "JOUER" << std::endl;
+            Engine::GetInstance()->getSceneModule()->SetPendingScene(goData.scene);
+            
         });
+
 
     CreateButton(mainMenu, "Quitter", "../Asset/Boutton/red_button.png", CenterY(+50), [](GameObject* obj) {
         std::cout << "CLIC QUITTER" << std::endl;
         Engine::GetInstance()->ShutDown();
-        InputManager::Clear();
         });
 
-    return mainMenu;
+    return { mainMenu };
 }
 
 
@@ -111,35 +128,60 @@ Scene* Scenes::CreatePause()
 
 }
 
-Scene* Scenes::CreateGameover()
+GameOverData Scenes::CreateGameover(MainData mainData)
 {
     Scene* GameOver = new Scene("Game Over", { screenW, screenH });
     std::string GameOverStr = "Game Over !";
 
+    // Background
     GameObject* background = new GameObject({ 0, 0 });
     SpriteRenderer* bgSprite = new SpriteRenderer(
         "../Asset/GameOver/background.png",
-        { 1284 , 1074},
+        { 1284, 1074 },
         { 1, 1 }
     );
-
     sf::Vector2u winSize = Engine::GetInstance()->getSceneModule()->getWindow().getSize();
-    float scaleX = winSize.x / 1890.f;
-    float scaleY = winSize.y / 1417.f;
-    float scale = std::max(scaleX, scaleY);
-
+    float scaleX = winSize.x / 1284.f;
+    float scaleY = winSize.y / 1074.f;
+    float scale = std::max(scaleY, scaleX);
     bgSprite->setScale(scale);
-    bgSprite->setFond(true);    
+    bgSprite->setFond(true);
     background->AddComponent(bgSprite);
     GameOver->AddGameObject(background);
-    background->Start();
+
 
 
     // Titre
     GameObject* title = new GameObject({ CenterX(GameOverStr, 72, fontPath), 80.0f });
     title->AddComponent(new Text(GameOverStr, 72, White, fontPath));
     GameOver->AddGameObject(title);
-    title->Start();
 
-    return GameOver;
+
+    // Skull
+    GameObject* Skull = new GameObject({ (float)winSize.x / 2.f, (float)winSize.y / 2.f });
+    SpriteRenderer* skullSprite = new SpriteRenderer(
+        "../Asset/GameOver/skull.png",
+        { 1890, 1417 },
+        { 1, 1 }
+    );
+    float skullScale = (winSize.x * 1.5f) / 1890.f;
+    skullSprite->setScale(skullScale);
+
+    Skull->AddComponent(skullSprite);
+    Skull->AddComponent(new AudioManager("../Asset/GameOver/harold-screamer.mp3"));
+    Skull->AddComponent(new DelayedSkull(2.f));
+    GameOver->AddGameObject(Skull);
+
+
+ 
+    CreateButton(GameOver, "Rejouer", "../Asset/Boutton/red_button.png", CenterY(50),
+        [mainData](GameObject* obj) {
+            
+            Engine::GetInstance()->getSceneModule()->SetPendingScene(mainData.scene);
+
+        }, 3.f);
+
+
+
+    return { GameOver };
 }

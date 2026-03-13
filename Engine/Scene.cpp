@@ -41,9 +41,11 @@ GameObject* Scene::getThisObjByText(std::string name)
 void Scene::Start()
 {
 	for (GameObject* object : objects)
-	{
 		object->Start();
-	}
+
+	for (auto& callback : onStartCallbacks)
+		callback();
+
 	if (LvLData != nullptr)
 	{
 		LvLData->Start();
