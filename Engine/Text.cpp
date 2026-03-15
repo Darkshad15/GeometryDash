@@ -4,7 +4,7 @@
 Text::Text():
 	text(this->font)
 {
-	if (!this->font.openFromFile("arial.ttf"))
+	if (!this->font.openFromFile("ProtoNerdFontMono-Regular.ttf"))
 	{
 		std::cout << "Erreur de chargement de la font par defaut " << std::endl;
 	}
@@ -41,6 +41,7 @@ void Text::Start()
 
 void Text::Update()
 {
+
 	this->text.setPosition({ owner->getTransform().pos.x,owner->getTransform().pos.y });
 }
 

@@ -78,7 +78,7 @@ public:
 
 	//Constructeurs
 	Text();
-	Text(std::string text, int size = 30, sf::Color color = sf::Color::White, std::string font = "arial.ttf");
+	Text(std::string text, int size = 30, sf::Color color = sf::Color::White, std::string font = "ProtoNerdFontMono-Regular.ttf");
 
 	//Get
 	sf::Text& getSFText() { return text; }
@@ -169,15 +169,18 @@ private:
 	std::map<std::string, float> floats;
 	std::map<std::string, double> doubles;
 	std::map<std::string, std::string> strings;
+	std::map<std::string, bool> bools;
 public:
 	void addInt(std::string name, int value);
 	void addFloat(std::string name, float value);
 	void addDouble(std::string name, double value);
 	void addString(std::string name, std::string value);
-
+	void addBool(std::string name, bool value);
+	void setFloat(std::string name, float value) { if (floats.find(name) != floats.end()) { floats[name] = value; } };
 	int getInt(std::string name) {{if (integers.find(name) != integers.end()) {return integers[name];} return 0;}};
 	float getFloat(std::string name) {{if(floats.find(name) != floats.end()) { return floats[name]; } return 0;}};
 	double getDouble(std::string name) {{if(doubles.find(name) != doubles.end()) { return doubles[name];} return 0;}};
+	bool getBool(std::string name) { { if (bools.find(name) != bools.end()) { return bools[name]; } return 0; } };
 	void PlusInt(std::string name, int i) { if (integers.find(name) != integers.end()) { integers[name] += i; } };
 	void MinusInt(std::string name, int i) { if (integers.find(name) != integers.end()) { integers[name] -= i; } };
 	std::string getString(std::string name) {{if(strings.find(name) != strings.end()) { return strings[name]; } return "NUL"; } };
@@ -236,11 +239,39 @@ public:
 	void StartClock();
 	void StopClock();
 	void ResetClock();
+	void RestartClock();
 	float GetTimeSinceStart() { return clock.getElapsedTime().asSeconds(); };
-	
 
 	void Start() override {}
 	void Update() override {}
 	void Render(sf::RenderWindow& window) override {}
+};
+
+
+
+class Shape : public Component {
+public:
+	enum class Type { NONE, RECTANGLE, CIRCLE, TRIANGLE };
+
+private:
+	sf::RectangleShape rectangle;
+	sf::CircleShape circle;
+	sf::CircleShape triangle;
+	sf::Vector2f size;
+	sf::Color color;
+	Type currentType = Type::NONE;
+	bool isVisible = true;
+public:
+	Shape();
+	sf::FloatRect getBounds();
+	Type getType() { return currentType; }
+
+	void setRectangle(sf::Vector2f s, sf::Color c);
+	void setCircle(float radius, sf::Color c);
+	void setTriangle(float radius, sf::Color c);
+	void setVisible(bool Visible);
+	void Start() override;
+	void Update() override;
+	void Render(sf::RenderWindow& window);
 };
 

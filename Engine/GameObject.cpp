@@ -26,6 +26,7 @@ void GameObject::Start() //Init tous les composants de l'objet
 }
 
 void GameObject::Update() {
+    if (!active) return;
     for (Component* component : components)
     {
         if (component != nullptr)
@@ -36,10 +37,13 @@ void GameObject::Update() {
         {
             std::cout << "[ERROR] Composant null dans Update!" << std::endl;
         }
+
+        
     }
 }
 
 void GameObject::Render(sf::RenderWindow& window) {
+    if (!active) return;
     for (Component* component : components)
     {
         if (component != nullptr)

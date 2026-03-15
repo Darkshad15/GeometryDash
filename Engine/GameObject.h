@@ -28,6 +28,7 @@ public:
 	//Get
 	bool getClickable() { return clickable; }
 	bool getActive() { return active; }
+	void setActive(bool isActive) { isActive = active; }
 	Scene* getOwner() { return owner; }
 	Transform& getTransform();
 	template<typename T>

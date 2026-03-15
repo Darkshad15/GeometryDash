@@ -159,10 +159,10 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Movement.cpp" />
     <ClCompile Include="NewClock.cpp" />
-    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneModule.cpp" />
     <ClCompile Include="Projectile.cpp" />
+    <ClCompile Include="Shape.cpp" />
     <ClCompile Include="SpriteRenderer.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="Transform.cpp" />

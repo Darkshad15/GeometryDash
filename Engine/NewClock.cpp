@@ -11,6 +11,14 @@ void NewClock::StopClock() {
 }
 
 void NewClock::ResetClock() {
+	
 	clock.reset();
 }
+
+void NewClock::RestartClock(){
+
+	clock.restart();
+}
+
+
 
