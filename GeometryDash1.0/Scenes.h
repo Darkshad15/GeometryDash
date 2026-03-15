@@ -4,8 +4,8 @@
 #include<vector>
 
 
-extern unsigned int screenW;
-extern unsigned int screenH;
+unsigned int screenW;
+unsigned int screenH;
 
 
 struct GameOverData {
