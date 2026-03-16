@@ -54,7 +54,8 @@ public:
 	void Start();
 
 	void CreateButton(Scene* scene, const std::string& texte, const std::string& imagePath,
-		float posY, std::function<void(GameObject*)> onClick, float delay = 0.f, float scale = 0.2f);
+		float posY, std::function<void(GameObject*)> onClick,
+		float delay = 0.f, float scale = 0.2f, float posX = -1.0f);
 
 	MainData CreateMain();
 

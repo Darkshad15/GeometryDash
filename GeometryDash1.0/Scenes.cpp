@@ -22,15 +22,16 @@ extern unsigned int screenH;
 Scenes sc;
 
 void Scenes::CreateButton(Scene* scene, const std::string& texte, const std::string& imagePath,
-    float posY, std::function<void(GameObject*)> onClick, float delay, float scale)
+    float posY, std::function<void(GameObject*)> onClick, float delay, float scale, float posX)
 {
-
-    float btnW = 874 * scale;  
-    float btnH = 320 * scale;  
-    float btnX = (screenW / 2.0f) - (btnW / 2.0f);  
+    float btnW = 874 * scale;
+    float btnH = 320 * scale;
+    float btnX = (posX < 0)
+        ? (screenW / 2.0f) - (btnW / 2.0f)  // centré par défaut
+        : posX - (btnW / 2.0f);              // position custom
     float btnY = posY - (btnH / 2.0f);
 
-    SpriteRenderer* sprite = new SpriteRenderer(imagePath, { 874, 320 }, { 1, 1 });  
+    SpriteRenderer* sprite = new SpriteRenderer(imagePath, { 874, 320 }, { 1, 1 });
     sprite->setAnimated(false);
     sprite->setScale(scale);
 
@@ -39,11 +40,13 @@ void Scenes::CreateButton(Scene* scene, const std::string& texte, const std::str
     btn->setClickable(true);
     scene->AddGameObject(btn);
 
-    // Texte centré
+    // Texte centré sur le bouton
     sf::Font font(fontPath);
     sf::Text sfText(font, texte, 40);
     auto txtBounds = sfText.getLocalBounds();
-    float txtX = (screenW / 2.0f) - (txtBounds.size.x / 2.0f) - txtBounds.position.x;
+    float txtX = (posX < 0)
+        ? (screenW / 2.0f) - (txtBounds.size.x / 2.0f) - txtBounds.position.x
+        : posX - (txtBounds.size.x / 2.0f) - txtBounds.position.x; // centré sur posX
     float txtY = posY - (txtBounds.size.y / 2.0f) - txtBounds.position.y;
 
     GameObject* txt = new GameObject({ txtX, txtY });
@@ -54,31 +57,32 @@ void Scenes::CreateButton(Scene* scene, const std::string& texte, const std::str
     InputManager::RegisterClickableObject(btn, onClick);
     InputManager::RegisterClickableObject(txt, onClick);
 
-    scene->AddOnStartCallback([btn, txt, onClick, btn_sprite = sprite, btnX, btnY, btnH]() {
+    scene->AddOnStartCallback([btn, txt, onClick, btn_sprite = sprite, btnX, btnY, btnH, posX, scale]() {
         InputManager::RegisterClickableObject(btn, onClick);
         InputManager::RegisterClickableObject(txt, onClick);
         InputManager::RegisterHoverObject(btn,
-            [btn, btn_sprite, btnX, btnY, btnH](GameObject* obj) {
+            [btn, btn_sprite, btnX, btnY, btnH, posX](GameObject* obj) {
                 float newScale = 0.23f;
                 float newW = 874 * newScale;
                 float newH = 320 * newScale;
                 btn_sprite->setScale(newScale);
-                btn->getTransform().pos.x = (screenW / 2.0f) - (newW / 2.0f);
+                btn->getTransform().pos.x = (posX < 0)
+                    ? (screenW / 2.0f) - (newW / 2.0f)
+                    : posX - (newW / 2.0f);
                 btn->getTransform().pos.y = btnY - ((newH - btnH) / 2.0f);
             },
-            [btn, btn_sprite, btnX, btnY](GameObject* obj) {
-                btn_sprite->setScale(0.2f);
+            [btn, btn_sprite, btnX, btnY, scale](GameObject* obj) {
+                btn_sprite->setScale(scale);
                 btn->getTransform().pos.x = btnX;
                 btn->getTransform().pos.y = btnY;
             }
         );
         });
+
     if (delay > 0.f) {
-        btn->AddComponent(new DelayedButton(delay, txt)); 
-   
+        btn->AddComponent(new DelayedButton(delay, txt));
     }
 }
-
 void Scenes::Start()
 {
     // Callback F11
@@ -136,7 +140,6 @@ MainData Scenes::CreateMain()
             Engine::GetInstance()->getSceneModule()->SetPendingScene(optionData.scene);
         });
 
-
     CreateButton(mainMenu, "Quitter", "../Asset/Boutton/red_button.png", CenterY(+125), [](GameObject* obj) {
         std::cout << "CLIC QUITTER" << std::endl;
         Engine::GetInstance()->ShutDown();
@@ -155,7 +158,7 @@ OptionData Scenes::CreateOption(MainData mainData)
 
 
     // Bloc "Touche"
-    float blocY = CenterY(-200);
+    float blocY = CenterY(-180);
     float blocX = CenterX(-300);
 
     GameObject* touche = new GameObject({ blocX, blocY });
@@ -168,12 +171,50 @@ OptionData Scenes::CreateOption(MainData mainData)
 
 
     std::string fsStr = Settings::GetInstance().IsFullscreen()
-        ? "Plein ecran : ON  (F1)"
+        ? "Plein ecran : ON  (F11)"
         : "Plein ecran : OFF (F11)";
 
     GameObject* fullscreenInfo = new GameObject({ CenterX(fsStr, 30, fontPath), CenterY(100) });
     fullscreenInfo->AddComponent(new Text(fsStr, 30, White, fontPath));
     Option->AddGameObject(fullscreenInfo);
+
+    float volBlocY = CenterY(0);
+
+    // Texte volume
+    int vol = Settings::GetInstance().GetVolume();
+    std::string volStr = "Son : " + std::to_string(vol) + "%";
+
+    // Calculer la largeur du texte pour centrer le bloc
+    sf::Font font(fontPath);
+    sf::Text sfText(font, volStr, 30);
+    float txtLargeur = sfText.getLocalBounds().size.x;
+    float volBlocX = screenW - 250.0f;
+    float centreBlocX = volBlocX + (txtLargeur / 2.0f); // centre du texte
+
+    GameObject* volTxt = new GameObject({ volBlocX, CenterY(-80.0f) });
+    volTxt->AddComponent(new Text(volStr, 30, White, fontPath));
+    Option->AddGameObject(volTxt);
+
+
+    // Bouton + aligné sur le centre du texte
+    CreateButton(Option, "+", "../Asset/Boutton/red_button.png", CenterY(-20),
+        [this](GameObject* obj) {
+            Settings::GetInstance().SetVolume(Settings::GetInstance().GetVolume() + 10);
+            MainData newMain = CreateMain();
+            OptionData optionData = CreateOption(newMain);
+            Engine::GetInstance()->getSceneModule()->SetPendingScene(optionData.scene);
+        }, 0.f, 0.1f, centreBlocX);
+
+
+
+    // Bouton - aligné sur le centre du texte
+    CreateButton(Option, "-", "../Asset/Boutton/red_button.png", CenterY(+40),
+        [this](GameObject* obj) {
+            Settings::GetInstance().SetVolume(Settings::GetInstance().GetVolume() - 10);
+            MainData newMain = CreateMain();
+            OptionData optionData = CreateOption(newMain);
+            Engine::GetInstance()->getSceneModule()->SetPendingScene(optionData.scene);
+        }, 0.f, 0.1f, centreBlocX);
 
     InputManager::Initialize(&Engine::GetInstance()->getSceneModule()->getWindow());
     CreateButton(Option, "Return", "../Asset/Boutton/red_button.png", CenterY(200),
