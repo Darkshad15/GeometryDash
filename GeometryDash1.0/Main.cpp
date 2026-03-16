@@ -34,19 +34,27 @@ int main()
         level->Move(deltaTime);
         });
 
-    Event::CreateEvent(1, [&level, &player]() {
-        // Reset les blocs à leur position de départ
-        level->Reset();
-
-        // Reset le joueur
-        player->SetPosition({ 200.f, 200.f });
+    Event::CreateEvent(-3, [&level, &player]() {
         Variables* var = player->GetComponent<Variables>();
-        if (var != nullptr) {
-            var->setFloat("velocityY", 0.0f);
-            var->setFloat("isGrounded", 0.0f);
+        if (var != nullptr && var->getFloat("isDead") == 1.0f)
+        {
+            // Reset les blocs à leur position de départ
+            level->Reset();
+
+            // Reset le joueur
+            player->SetPosition({ 200.f, 200.f });
+            Variables* var = player->GetComponent<Variables>();
+            if (var != nullptr) {
+                var->setFloat("velocityY", 0.0f);
+                var->setFloat("isGrounded", 0.0f);
+            }
+            player->setActive(true);
+            var->setFloat("isDead", 0.0f);
         }
-        player->setActive(true);
+
         });
+
+
     engine.Start();
 
     return 0;

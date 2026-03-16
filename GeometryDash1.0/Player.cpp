@@ -16,6 +16,7 @@ GameObject* createPlayer()
 	var->addFloat("jumpForce", -12.0f);
 	var->addFloat("groundY", 400.0f);    // Sol temporaire
 	var->addFloat("isGrounded", 0.0f); //1.0f au sol , 0.0f en l'air
+	var->addFloat("isDead", 0.0f);
 	return player;
 
 }
@@ -83,17 +84,23 @@ void MovePl(GameObject* player, Scene* scene) {
 					}
 
 					// Game over
+					
 					if (isDead) {
 						std::cout << "Mur ou pic percuté ! Mort du joueur." << std::endl;
 
 						// On déclenche l'Event 1 qui gère le nettoyage et le restart dans Main.cpp
-						Event::SetEventTrue(1);
+						//Event::SetEventTrue(-3);
+						var->setFloat("isDead", 1.0f);
+		
 					}
 					else {
 						// On applique la nouvelle position UNIQUEMENT si le joueur est en vie
 						player->getTransform().pos.y = nextY;
 						var->setFloat("velocityY", velocityY);
 					}
+				
+					
+					
 
 					if (touchGround) {
 						var->setFloat("isGrounded", 1.0f);
