@@ -3,6 +3,7 @@
 #include "SFML/System.hpp"
 #include "SFML/Graphics.hpp"
 #include "SFML/Audio.hpp"
+
 #include "SceneModule.h"
 #include "InputManager.h"
 #include <vector>
@@ -26,8 +27,6 @@ private:
 
 
 public:
-
-   
 
     //Constructeurs
     Engine();

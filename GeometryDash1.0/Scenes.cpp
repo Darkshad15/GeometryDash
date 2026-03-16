@@ -7,8 +7,10 @@
 #include "DelayedSkull.h"
 #include "Boutton.h"
 
+
 #include <SFML/Graphics.hpp>
 #include <windows.h>
+#undef CreateEvent 
 #include <thread>
 #include <chrono>
 
@@ -98,10 +100,9 @@ MainData Scenes::CreateMain()
 
     InputManager::Initialize(&Engine::GetInstance()->getSceneModule()->getWindow());
     CreateButton(mainMenu, "Jouer", "../Asset/Boutton/red_button.png", CenterY(-50),
-        [goData](GameObject* obj) {
-            std::cout << "JOUER" << std::endl;
-            Engine::GetInstance()->getSceneModule()->SetPendingScene(goData.scene);
-            
+        [this](GameObject* obj) {
+            LevelData levelData = CreateLevel();
+            Engine::GetInstance()->getSceneModule()->SetPendingScene(levelData.scene);
         });
 
 
@@ -112,6 +113,35 @@ MainData Scenes::CreateMain()
 
     return { mainMenu };
 }
+
+
+LevelData Scenes::CreateLevel()
+{
+    Scene* mainScene = new Scene("Main", { 1500, 600 });
+
+    Gen* gene = new Gen(mainScene);
+    Elements* el = new Elements();
+    Level* level = gene->getLevel();
+
+    GameObject* player = createPlayer();
+    MovePl(player, mainScene);
+    updColision(player, el);
+    mainScene->AddGameObject(player);
+
+    gene->GenerateLevel();
+    gene->DrawAllLevels(mainScene);
+
+    mainScene->AddOnStartCallback([level]() {
+        Event::CreateEvent(-1, [level]() {
+            static sf::Clock clock;
+            float deltaTime = clock.restart().asSeconds();
+            level->Move(deltaTime);
+            });
+        });
+
+    return { mainScene };
+}
+
 
 
 Scene* Scenes::CreatePause()
@@ -173,12 +203,10 @@ GameOverData Scenes::CreateGameover(MainData mainData)
     GameOver->AddGameObject(Skull);
 
 
- 
     CreateButton(GameOver, "Rejouer", "../Asset/Boutton/red_button.png", CenterY(50),
-        [mainData](GameObject* obj) {
-            
-            Engine::GetInstance()->getSceneModule()->SetPendingScene(mainData.scene);
-
+        [this](GameObject* obj) {  
+            MainData newMain = CreateMain();  
+            Engine::GetInstance()->getSceneModule()->SetPendingScene(newMain.scene);
         }, 3.f);
 
 

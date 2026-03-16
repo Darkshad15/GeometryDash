@@ -2,13 +2,21 @@
 #include "Scene.h"
 #include <iostream>
 #include<vector>
+#include "Gen.h"
+#include "Level.h"
+#include "Player.h"
+#include "Elements.h"
 
 
-unsigned int screenW;
-unsigned int screenH;
+extern unsigned int screenW;
+extern unsigned int screenH;
 
 
 struct GameOverData {
+	Scene* scene;
+};
+
+struct LevelData {
 	Scene* scene;
 };
 
@@ -44,6 +52,8 @@ public:
 		float posY, std::function<void(GameObject*)> onClick, float delay = 0.f);
 
 	MainData CreateMain();
+
+	LevelData CreateLevel();
 
 	Scene* CreatePause();
 

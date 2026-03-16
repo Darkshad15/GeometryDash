@@ -18,9 +18,6 @@ private:
 
 	std::vector<std::function<void()>> onStartCallbacks;
 
-
-	
-
 public:
 
 	//Constructeurs
