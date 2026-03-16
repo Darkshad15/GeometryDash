@@ -13,14 +13,12 @@ int main()
     Engine engine({ 1500, 600 }, "Mon Premier Jeu");
     engine.getSceneModule()->getWindow().setFramerateLimit(60);
     Scene* mainScene = new Scene("Main", { 1500, 600 });
-
     Gen* gene = new Gen(mainScene);
     Level* level = gene->getLevel();
     InputManager::Initialize(&engine.getSceneModule()->getWindow());
     GameObject* player;
     player = createPlayer();
     MovePl(player, mainScene);
-
 
     mainScene->AddGameObject(player);
     engine.getSceneModule()->SetActiveScene(mainScene);

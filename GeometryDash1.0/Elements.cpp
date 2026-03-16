@@ -62,12 +62,16 @@ GameObject* Elements::createSpike()
 	Shape* shape = new Shape();
 	shape->setTriangle(34.f, sf::Color::Red);
 	Variables* var = new Variables();
-	Collider* collision = new Collider();
+	TriangleCollider* collision = new TriangleCollider(shape->getTriangle());
 	var->addInt("Type", 2);
 	type = var->getInt("Type");
 	block->AddComponent(collision);
 	block->AddComponent(shape);
 	return block;
 }
+
+
+
+
 
 

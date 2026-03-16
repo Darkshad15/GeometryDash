@@ -258,7 +258,7 @@ public:
 	Shape();
 	sf::FloatRect getBounds();
 	Type getType() { return currentType; }
-
+	sf::CircleShape* getTriangle() { return &triangle; }
 	void setRectangle(sf::Vector2f s, sf::Color c);
 	void setCircle(float radius, sf::Color c);
 	void setTriangle(float radius, sf::Color c);
@@ -266,4 +266,20 @@ public:
 	void Start() override;
 	void Update() override;
 	void Render(sf::RenderWindow& window);
+};
+
+class TriangleCollider : public Component
+{
+private:
+	sf::CircleShape* shape;
+
+public:
+	TriangleCollider(sf::CircleShape* triangleShape) : shape(triangleShape) {}
+	std::array<sf::Vector2f, 3> getVertices();
+	bool containsPoint(sf::Vector2f P);
+	bool DoesCollide(GameObject* other);
+	inline bool pointInTriangle(sf::Vector2f P, sf::Vector2f A, sf::Vector2f B, sf::Vector2f C);
+	void Start() override {}
+	void Update() override {}
+	void Render(sf::RenderWindow& window) override {}
 };
