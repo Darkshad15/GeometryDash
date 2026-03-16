@@ -25,6 +25,9 @@
     <ClCompile Include="Scenes.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="Settings.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Boutton.h">
@@ -39,9 +42,6 @@
     <ClInclude Include="Gen.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Downloads\GeometryDash-dev\GeometryDash-dev\GeometryDash1.0\Level.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="Level.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
@@ -49,6 +49,9 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="Scenes.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Settings.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>

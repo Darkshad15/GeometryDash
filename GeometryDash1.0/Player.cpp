@@ -69,6 +69,5 @@ void updColision(GameObject* player, Elements* elem)
             player->GetComponent<Variables>()->addBool("grounded", true);
         }
         
-        
         });
 }

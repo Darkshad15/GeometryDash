@@ -20,6 +20,9 @@ struct LevelData {
 	Scene* scene;
 };
 
+struct OptionData {
+	Scene* scene;
+};
 
 struct MainData {
 	Scene* scene;
@@ -31,7 +34,9 @@ class Scenes
 private:
 	std::string fontPath = "../Asset/Font/Moonstrike.otf";
 
-
+	float CenterX(float offsetX = 0.0f) {
+		return (screenW / 2.0f) + offsetX;
+	}
 
 	float CenterX(const std::string& texte, float taillePolice, const std::string& cheminPolice) {
 		sf::Font font(cheminPolice);  
@@ -49,9 +54,11 @@ public:
 	void Start();
 
 	void CreateButton(Scene* scene, const std::string& texte, const std::string& imagePath,
-		float posY, std::function<void(GameObject*)> onClick, float delay = 0.f);
+		float posY, std::function<void(GameObject*)> onClick, float delay = 0.f, float scale = 0.2f);
 
 	MainData CreateMain();
+
+	OptionData CreateOption(MainData mainData);
 
 	LevelData CreateLevel();
 

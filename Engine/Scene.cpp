@@ -36,8 +36,6 @@ GameObject* Scene::getThisObjByText(std::string name)
 	}
 }
 
-
-
 void Scene::Start()
 {
 	for (GameObject* object : objects)

@@ -138,10 +138,11 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Scenes.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Downloads\GeometryDash-dev\GeometryDash-dev\GeometryDash1.0\Level.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Settings.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Downloads\GeometryDash-dev\GeometryDash-dev\Engine\Engine.vcxproj">

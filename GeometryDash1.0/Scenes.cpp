@@ -6,7 +6,7 @@
 #include "DelayedMusic.h"
 #include "DelayedSkull.h"
 #include "Boutton.h"
-
+#include "Settings.h"
 
 #include <SFML/Graphics.hpp>
 #include <windows.h>
@@ -22,9 +22,9 @@ extern unsigned int screenH;
 Scenes sc;
 
 void Scenes::CreateButton(Scene* scene, const std::string& texte, const std::string& imagePath,
-    float posY, std::function<void(GameObject*)> onClick, float delay   )
+    float posY, std::function<void(GameObject*)> onClick, float delay, float scale)
 {
-    float scale = 0.2f;
+
     float btnW = 874 * scale;  
     float btnH = 320 * scale;  
     float btnX = (screenW / 2.0f) - (btnW / 2.0f);  
@@ -81,37 +81,111 @@ void Scenes::CreateButton(Scene* scene, const std::string& texte, const std::str
 
 void Scenes::Start()
 {
+    // Callback F11
+    Engine::GetInstance()->getSceneModule()->onFullscreenToggle = []() {
+        Settings::GetInstance().ToggleFullscreen();
+        };
+
+    // Callback après changement de résolution
+    Engine::GetInstance()->getSceneModule()->onFullscreenApplied = [this]() {
+        std::string sceneName = Engine::GetInstance()->getSceneModule()->GetActiveScene()->getName();
+
+        if (sceneName == "Option") {
+            MainData newMain = CreateMain();
+            OptionData optionData = CreateOption(newMain);
+            Engine::GetInstance()->getSceneModule()->SetPendingScene(optionData.scene);
+        }
+        else if (sceneName == "MainMenu") {
+            MainData newMain = CreateMain();
+            Engine::GetInstance()->getSceneModule()->SetPendingScene(newMain.scene);
+        }
+        else if (sceneName == "Game Over") {
+            MainData newMain = CreateMain();
+            GameOverData goData = CreateGameover(newMain);
+            Engine::GetInstance()->getSceneModule()->SetPendingScene(goData.scene);
+        }
+        };
+
+    // Lancer le menu principal
     MainData mainData = CreateMain();
     Engine::GetInstance()->getSceneModule()->SetActiveScene(mainData.scene);
-
 }
-
 
 MainData Scenes::CreateMain()
 {
     Scene* mainMenu = new Scene("MainMenu", { screenW, screenH });
-    GameOverData goData = CreateGameover({ mainMenu });   // créée à l'avance
+    GameOverData goData = CreateGameover({ mainMenu });   
 
     // Titre
     std::string titreStr = "Gamuo desu !";
-    GameObject* title = new GameObject({ CenterX(titreStr, 72, fontPath), 80.0f });
+    GameObject* title = new GameObject({ CenterX(titreStr, 72, fontPath), 10.0f });
     title->AddComponent(new Text(titreStr, 72, White, fontPath));
     mainMenu->AddGameObject(title);
 
     InputManager::Initialize(&Engine::GetInstance()->getSceneModule()->getWindow());
-    CreateButton(mainMenu, "Jouer", "../Asset/Boutton/red_button.png", CenterY(-50),
+    CreateButton(mainMenu, "Jouer", "../Asset/Boutton/red_button.png", CenterY(-75),
         [this](GameObject* obj) {
             LevelData levelData = CreateLevel();
             Engine::GetInstance()->getSceneModule()->SetPendingScene(levelData.scene);
         });
 
+    CreateButton(mainMenu, "Option", "../Asset/Boutton/red_button.png", CenterY(+25),
+        [this](GameObject* obj) {
+            MainData newMain = CreateMain();
+            OptionData optionData = CreateOption(newMain);
+            Engine::GetInstance()->getSceneModule()->SetPendingScene(optionData.scene);
+        });
 
-    CreateButton(mainMenu, "Quitter", "../Asset/Boutton/red_button.png", CenterY(+50), [](GameObject* obj) {
+
+    CreateButton(mainMenu, "Quitter", "../Asset/Boutton/red_button.png", CenterY(+125), [](GameObject* obj) {
         std::cout << "CLIC QUITTER" << std::endl;
         Engine::GetInstance()->ShutDown();
         });
 
     return { mainMenu };
+}
+
+OptionData Scenes::CreateOption(MainData mainData)
+{
+    Scene* Option = new Scene("Option", { screenW , screenH });
+    std::string titreStr = "Option";
+    GameObject* title = new GameObject({ CenterX(titreStr, 75, fontPath), 10.0f });
+    title->AddComponent(new Text(titreStr, 72, White, fontPath));
+    Option->AddGameObject(title);
+
+
+    // Bloc "Touche"
+    float blocY = CenterY(-200);
+    float blocX = CenterX(-300);
+
+    GameObject* touche = new GameObject({ blocX, blocY });
+    touche->AddComponent(new Text("Touche", 50, White, fontPath));
+    Option->AddGameObject(touche);
+
+    GameObject* config = new GameObject({ blocX, blocY + 60.0f }); // 60px en dessous
+    config->AddComponent(new Text("Saut : espace", 25, White, fontPath));
+    Option->AddGameObject(config);
+
+
+    std::string fsStr = Settings::GetInstance().IsFullscreen()
+        ? "Plein ecran : ON  (F1)"
+        : "Plein ecran : OFF (F11)";
+
+    GameObject* fullscreenInfo = new GameObject({ CenterX(fsStr, 30, fontPath), CenterY(100) });
+    fullscreenInfo->AddComponent(new Text(fsStr, 30, White, fontPath));
+    Option->AddGameObject(fullscreenInfo);
+
+    InputManager::Initialize(&Engine::GetInstance()->getSceneModule()->getWindow());
+    CreateButton(Option, "Return", "../Asset/Boutton/red_button.png", CenterY(200),
+        [this](GameObject* obj) {
+            MainData newMain = CreateMain();
+            Engine::GetInstance()->getSceneModule()->SetPendingScene(newMain.scene);
+        });
+
+
+
+
+    return { Option };
 }
 
 
@@ -179,13 +253,10 @@ GameOverData Scenes::CreateGameover(MainData mainData)
     background->AddComponent(bgSprite);
     GameOver->AddGameObject(background);
 
-
-
     // Titre
     GameObject* title = new GameObject({ CenterX(GameOverStr, 72, fontPath), 80.0f });
     title->AddComponent(new Text(GameOverStr, 72, White, fontPath));
     GameOver->AddGameObject(title);
-
 
     // Skull
     GameObject* Skull = new GameObject({ (float)winSize.x / 2.f, (float)winSize.y / 2.f });
