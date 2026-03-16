@@ -209,7 +209,5 @@ GameOverData Scenes::CreateGameover(MainData mainData)
             Engine::GetInstance()->getSceneModule()->SetPendingScene(newMain.scene);
         }, 3.f);
 
-
-
     return { GameOver };
 }
