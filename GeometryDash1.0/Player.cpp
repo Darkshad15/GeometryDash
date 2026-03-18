@@ -12,7 +12,7 @@ GameObject* createPlayer()
 	player->AddComponent(collider);
 	player->AddComponent(var);
 	var->addFloat("velocityY", 0.0f);
-	var->addFloat("gravity", 0.45f);
+	var->addFloat("gravity", 0.485f);
 	var->addFloat("jumpForce", -12.0f);
 	var->addFloat("groundY", 400.0f);    // Sol temporaire
 	var->addFloat("isGrounded", 0.0f); //1.0f au sol , 0.0f en l'air
@@ -101,6 +101,9 @@ void MovePl(GameObject* player, Scene* scene) {
 								touchGround = true;
 							}
 							else if (nextY + ph > by + 5.f && nextY < by + bh - 5.f) {
+								isDead = true;
+							}
+							if (nextY > 610.f) {
 								isDead = true;
 							}
 						}
