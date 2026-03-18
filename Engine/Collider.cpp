@@ -25,13 +25,15 @@ bool Collider::DoesCollide(GameObject* target)
 	else if (owner->GetComponent<Shape>()) {
 		objBounds = owner->GetComponent<Shape>()->getBounds();
 	}
+
+
+
 	sf::FloatRect targetBounds;
-	
 	if (target->GetComponent<SpriteRenderer>()) {
 		targetBounds = target->GetComponent<SpriteRenderer>()->getBounds();
 	}
 	else if (target->GetComponent<Shape>()) {
-		targetBounds = target->GetComponent<Shape>()->getBounds();
+		targetBounds = target->GetComponent<Shape>()->getBounds();	
 	}
 
 	if (objBounds.findIntersection(targetBounds))

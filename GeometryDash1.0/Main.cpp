@@ -19,12 +19,14 @@ float centerY = screenH / 2.0f;
 int main()
 {
 
+
     Engine engine({ screenW, screenH }, "Mon Premier Jeu");
 
     Scenes scenes;
     scenes.Start();
 
     engine.Start();
+
 
 
     return 0;

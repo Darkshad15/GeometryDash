@@ -48,6 +48,7 @@ void Level::Draw(Scene* scene, std::vector<std::vector<int>> part, float offsetX
             case 0: continue;
             case 1: obj = elem->createBlock(); break;
             case 2: obj = elem->createSpike(); break;
+            case 3: obj = elem->createCircle(); break;
             default: break;
             }
 
@@ -55,7 +56,7 @@ void Level::Draw(Scene* scene, std::vector<std::vector<int>> part, float offsetX
                 float posX = (float)x * 64 + offsetX;
                 float posY = (float)y * 64;
 
-                
+
                 if (part[y][x] == 2) {
                     Shape* shape = obj->GetComponent<Shape>();
                     if (shape) {
@@ -68,6 +69,10 @@ void Level::Draw(Scene* scene, std::vector<std::vector<int>> part, float offsetX
                 obj->SetPosition({ posX, posY });
                 scene->AddGameObject(obj);
                 spawnedObjects.push_back(obj);
+                //obj->SetPosition({ posX, posY });
+                //cene->AddGameObject(obj);
+                //spawnedObjects.push_back(obj);
+                startPositions.push_back({ posX, posY });
             }
         }
     }
@@ -79,14 +84,14 @@ void Level::Move(float deltaTime)
     {
         obj->getTransform().pos.x -= 300.f * deltaTime;
 
-        
+
         float x = obj->getTransform().pos.x;
         Shape* shape = obj->GetComponent<Shape>();
 
         if (shape != nullptr)
         {
             if (x < -64.f || x > 2064.f)
-                shape->setVisible(false); 
+                shape->setVisible(false);
             else
                 shape->setVisible(true);
         }
@@ -94,5 +99,23 @@ void Level::Move(float deltaTime)
             obj->setActive(false);
         else
             obj->setActive(true);
+    }
+}
+
+void Level::Reset() {
+    // On parcourt tous les objets générés
+    for (size_t i = 0; i < spawnedObjects.size(); i++) {
+        if (spawnedObjects[i] != nullptr) {
+
+            // 1. On remet le bloc exactement là où il a sponné
+            spawnedObjects[i]->SetPosition(startPositions[i]);
+
+            // 2. On le réactive (au cas où il était passé hors de l'écran à gauche)
+            spawnedObjects[i]->setActive(true);
+            Shape* shape = spawnedObjects[i]->GetComponent<Shape>();
+            if (shape != nullptr) {
+                shape->setVisible(true);
+            }
+        }
     }
 }

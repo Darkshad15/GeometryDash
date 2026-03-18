@@ -19,11 +19,12 @@ private:
 	Elements* elem;
 	std::vector<std::vector<int>> LevelParts;
 	std::vector<GameObject*> spawnedObjects;
+	std::vector<sf::Vector2f> startPositions;
 public:
 	Level(int diff, int ord);
 	~Level();
 	void Draw(Scene* scene, std::vector<std::vector<int>> part, float offsetX);
 	void Move(float deltaTime);
 	std::vector<std::vector<int>> Load(const std::string& chemin);
+	void Reset();
 };
-

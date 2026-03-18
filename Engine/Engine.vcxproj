@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="Blink.cpp" />
+    <ClCompile Include="CircleCollider.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="DelayedMusic.cpp" />
@@ -166,6 +167,7 @@
     <ClCompile Include="SpriteRenderer.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="TriangleCollider.cpp" />
     <ClCompile Include="Variables.cpp" />
   </ItemGroup>
   <ItemGroup>

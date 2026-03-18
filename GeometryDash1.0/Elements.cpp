@@ -2,7 +2,7 @@
 
 
 Elements::Elements() {
-	
+
 }
 
 
@@ -17,8 +17,11 @@ void Elements::logic()
 	else if (type == 2) {
 
 	}
-	else if (type == 3){
-
+	else if (type == 3) {
+		if (gameObject) {
+			Collider* col = gameObject->GetComponent<Collider>();
+			Shape* rect = gameObject->GetComponent<Shape>();
+		}
 	}
 }
 
@@ -31,7 +34,7 @@ void Elements::draw(sf::RenderWindow& win)
 
 GameObject* Elements::createBlock()
 {
-	GameObject* block = new GameObject({100,100});
+	GameObject* block = new GameObject({ 100,100 });
 	Shape* shape = new Shape();
 	shape->setRectangle({ 64.f, 64.f }, sf::Color::Green);
 	Variables* var = new Variables();
@@ -48,11 +51,13 @@ GameObject* Elements::createCircle()
 {
 	GameObject* block = new GameObject({ 100,100 });
 	Shape* shape = new Shape();
-	shape->setCircle({ 64.f}, sf::Color(255, 255, 255));
+	shape->setCircle({ 20.f }, sf::Color::Yellow);
 	Variables* var = new Variables();
-	var->addInt("Type", 2);
+	CircleCollider* collision = new CircleCollider(shape->getCircle());
+	var->addInt("Type", 3);
 	type = var->getInt("Type");
 	block->AddComponent(shape);
+	block->AddComponent(collision);
 	return block;
 }
 
@@ -60,12 +65,18 @@ GameObject* Elements::createSpike()
 {
 	GameObject* block = new GameObject({ 100,100 });
 	Shape* shape = new Shape();
-	shape->setTriangle(34.f , sf::Color(255, 255, 255));
+	shape->setTriangle(34.f, sf::Color::Red);
 	Variables* var = new Variables();
+	TriangleCollider* collision = new TriangleCollider(shape->getTriangle());
 	var->addInt("Type", 2);
 	type = var->getInt("Type");
+	block->AddComponent(collision);
 	block->AddComponent(shape);
 	return block;
 }
+
+
+
+
 
 

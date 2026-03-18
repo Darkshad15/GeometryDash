@@ -73,6 +73,10 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="DelayedMusic.cpp">
+    <ClCompile Include="TriangleCollider.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="CircleCollider.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
