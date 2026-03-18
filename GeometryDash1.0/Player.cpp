@@ -12,7 +12,7 @@ GameObject* createPlayer()
 	player->AddComponent(collider);
 	player->AddComponent(var);
 	var->addFloat("velocityY", 0.0f);
-	var->addFloat("gravity", 0.485f);
+	var->addFloat("gravity", 0.45f);
 	var->addFloat("jumpForce", -12.0f);
 	var->addFloat("groundY", 400.0f);    // Sol temporaire
 	var->addFloat("isGrounded", 0.0f); //1.0f au sol , 0.0f en l'air
@@ -77,6 +77,19 @@ void MovePl(GameObject* player, Scene* scene) {
 							continue; // pas besoin de vérifier la collision rectangulaire
 						}
 
+
+						// === ORBE DE SAUT : cercle ===
+						CircleCollider* cc = obj->GetComponent<CircleCollider>();
+						if (cc != nullptr) {
+
+							if (cc->DoesCollide(player)) {
+
+								touchGround = true;
+							}
+
+							continue;
+						}
+
 						// === BLOC NORMAL : rectangle ===
 						if (obj->GetComponent<Collider>() == nullptr) continue;
 
@@ -91,6 +104,7 @@ void MovePl(GameObject* player, Scene* scene) {
 								isDead = true;
 							}
 						}
+
 					}
 
 					// Game over

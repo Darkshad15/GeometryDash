@@ -51,9 +51,9 @@ GameObject* Elements::createCircle()
 {
 	GameObject* block = new GameObject({ 100,100 });
 	Shape* shape = new Shape();
-	shape->setCircle({ 4.f }, sf::Color::Yellow);
+	shape->setCircle({ 20.f }, sf::Color::Yellow);
 	Variables* var = new Variables();
-	Collider* collision = new Collider();
+	CircleCollider* collision = new CircleCollider(shape->getCircle());
 	var->addInt("Type", 3);
 	type = var->getInt("Type");
 	block->AddComponent(shape);
