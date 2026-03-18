@@ -130,6 +130,7 @@ MainData Scenes::CreateMain()
     CreateButton(mainMenu, "Jouer", "../Asset/Boutton/red_button.png", CenterY(-75),
         [this](GameObject* obj) {
             LevelData levelData = CreateLevel();
+            
             Engine::GetInstance()->getSceneModule()->SetPendingScene(levelData.scene);
         });
 
@@ -233,42 +234,41 @@ OptionData Scenes::CreateOption(MainData mainData)
 LevelData Scenes::CreateLevel()
 {
     Scene* mainScene = new Scene("Main", { screenW, screenH });
+
     Gen* gene = new Gen(mainScene);
-    Level* level = gene->getLevel(); // pointeur brut
+    Level* level = gene->getLevel();
 
     GameObject* player = createPlayer();
-    MovePl(player, mainScene);
-
     mainScene->AddGameObject(player);
     gene->GenerateLevel();
     gene->DrawAllLevels(mainScene);
-    mainScene->Start();
 
-    Event::CreateEvent(-2, [level]() {
-        static sf::Clock clock;
-        float deltaTime = clock.restart().asSeconds();
-        level->Move(deltaTime);
-        });
+    mainScene->AddOnStartCallback([player, mainScene, level]() {
+        MovePl(player, mainScene);
 
-    Event::CreateEvent(-3, [level, player]() {
-        Variables* var = player->GetComponent<Variables>();
-        if (var != nullptr && var->getFloat("isDead") == 1.0f)
-        {
-            level->Reset();
-            player->SetPosition({ 200.f, 200.f });
+        Event::CreateEvent(-2, [level]() {
+            static sf::Clock clock;
+            float deltaTime = clock.restart().asSeconds();
+            level->Move(deltaTime);
+            });
+
+        Event::CreateEvent(-3, [level, player]() {
             Variables* var = player->GetComponent<Variables>();
-            if (var != nullptr) {
+            if (var != nullptr && var->getFloat("isDead") == 1.0f)
+            {
+                level->Reset();
+                player->SetPosition({ 200.f, 200.f });
                 var->setFloat("velocityY", 0.0f);
                 var->setFloat("isGrounded", 0.0f);
+                player->setActive(true);
+                var->setFloat("isDead", 0.0f);
             }
-            player->setActive(true);
-            var->setFloat("isDead", 0.0f);
-        }
+            });
         });
 
+    mainScene->Start();
     return { mainScene };
 }
-
 
 
 Scene* Scenes::CreatePause()

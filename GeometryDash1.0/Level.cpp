@@ -82,7 +82,7 @@ void Level::Move(float deltaTime)
 {
     for (GameObject* obj : spawnedObjects)
     {
-        obj->getTransform().pos.x -= 300.f * deltaTime;
+        obj->getTransform().pos.x -= 500.f * deltaTime;
 
 
         float x = obj->getTransform().pos.x;

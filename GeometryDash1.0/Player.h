@@ -7,6 +7,7 @@
 #include "Scene.h"  
 #include "Elements.h"
 #include "Level.h"
+#include "Gen.h"
 
 GameObject* createPlayer();
 

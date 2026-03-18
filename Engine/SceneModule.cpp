@@ -30,10 +30,7 @@ void SceneModule::SetActiveScene(Scene* scene)
     window.setTitle(name + " : " + scene->getName());
 }
 
-Scene* SceneModule::GetActiveScene()
-{
-    return activeScene;
-}
+
 
 void SceneModule::Start()
 {
@@ -70,6 +67,7 @@ void SceneModule::Update()
                 window.create(sf::VideoMode::getDesktopMode(), name, sf::State::Fullscreen);
             else
                 window.create(sf::VideoMode({ 1280, 720 }), name, sf::State::Windowed);
+            window.setFramerateLimit(60);
 
             screenW = window.getSize().x;
             screenH = window.getSize().y;
@@ -102,4 +100,5 @@ void SceneModule::Update()
         if (activeScene != nullptr)
             activeScene->Update(window);
     }
+    window.display();
 }

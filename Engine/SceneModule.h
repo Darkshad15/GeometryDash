@@ -13,7 +13,7 @@ private:
     bool pendingFullscreen = false;
     bool pendingFullscreenValue = false;
 public:
-    std::function<void()> onFullscreenToggle = nullptr; // callback F11
+    std::function<void()> onFullscreenToggle = nullptr; 
     std::function<void()> onFullscreenApplied = nullptr;
 
 
@@ -21,7 +21,7 @@ public:
     SceneModule(sf::Vector2u size, std::string name);
 
     sf::RenderWindow& getWindow() { return window; }
-    Scene* GetActiveScene();
+    Scene* GetActiveScene() { return activeScene; }
 
     void SetActiveScene(Scene* scene);
     void SetPendingScene(Scene* scene) { pendingScene = scene; sceneChanged = true; }

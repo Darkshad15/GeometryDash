@@ -21,9 +21,13 @@ int main()
 
 
     Engine engine({ screenW, screenH }, "Mon Premier Jeu");
-    InputManager::Initialize(&engine.getSceneModule()->getWindow());
+    
+    engine.getSceneModule()->getWindow().setFramerateLimit(60);
+    
     Scenes scenes;
     scenes.Start();
+
+
 
     engine.Start();
 

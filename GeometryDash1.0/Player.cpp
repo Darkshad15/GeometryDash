@@ -23,7 +23,7 @@ GameObject* createPlayer()
 
 void MovePl(GameObject* player, Scene* scene) {
 
-	InputManager::RegisterKeyPress("Space", [player]()
+	InputManager::RegisterKeyHold("Space", [player]()
 		{
 			Variables* var = player->GetComponent<Variables>();
 			if (var != nullptr && var->getFloat("isGrounded") == 1.0f) {
@@ -137,4 +137,5 @@ void MovePl(GameObject* player, Scene* scene) {
 				}
 			}
 		});
+
 }

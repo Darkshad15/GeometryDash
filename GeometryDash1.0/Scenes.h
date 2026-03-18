@@ -33,7 +33,7 @@ class Scenes
 
 private:
 	std::string fontPath = "../Asset/Font/Moonstrike.otf";
-
+	SceneModule* scenem;
 	float CenterX(float offsetX = 0.0f) {
 		return (screenW / 2.0f) + offsetX;
 	}
@@ -48,6 +48,10 @@ private:
 	float CenterY(float offsetY = 0) {
 		return (screenH / 2.0f) + offsetY;
 	}
+	Scene* currentLevelScene = nullptr;
+	Level* currentLevel = nullptr;
+	GameObject* currentPlayer = nullptr;
+
 
 public:
 
@@ -57,11 +61,16 @@ public:
 		float posY, std::function<void(GameObject*)> onClick,
 		float delay = 0.f, float scale = 0.2f, float posX = -1.0f);
 
+	Scene* getActualScene() { return scenem->GetActiveScene(); }
+	
+
 	MainData CreateMain();
 
 	OptionData CreateOption(MainData mainData);
 
 	LevelData CreateLevel();
+
+	void updateLevel(Scene* sc);
 
 	Scene* CreatePause();
 
