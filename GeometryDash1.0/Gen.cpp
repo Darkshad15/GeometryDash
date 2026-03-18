@@ -34,7 +34,7 @@ void Gen::DrawLevel(int index, Scene* scene)
 			}
 			offsetX += maxWidth * 64.f;
 		}
-		//offsetX += loaded[i][0].size() * 64.f;
+		
 	}
 
 	lvl->Draw(scene, loaded[index], offsetX);

@@ -7,6 +7,7 @@
 #include "DelayedSkull.h"
 #include "Boutton.h"
 #include "Settings.h"
+#include "PlayerState.h"
 
 #include <SFML/Graphics.hpp>
 #include <windows.h>
@@ -129,9 +130,12 @@ MainData Scenes::CreateMain()
     InputManager::Initialize(&Engine::GetInstance()->getSceneModule()->getWindow());
     CreateButton(mainMenu, "Jouer", "../Asset/Boutton/red_button.png", CenterY(-75),
         [this](GameObject* obj) {
-            LevelData levelData = CreateLevel();
-            
-            Engine::GetInstance()->getSceneModule()->SetPendingScene(levelData.scene);
+            //LevelData levelData = CreateLevel();
+            //Engine::GetInstance()->getSceneModule()->SetPendingScene(levelData.scene);
+
+
+            PowerUpData powerupData = CreatePowerup();
+            Engine::GetInstance()->getSceneModule()->SetPendingScene(powerupData.scene);
         });
 
     CreateButton(mainMenu, "Option", "../Asset/Boutton/red_button.png", CenterY(+25),
@@ -225,9 +229,30 @@ OptionData Scenes::CreateOption(MainData mainData)
         });
 
 
-
-
     return { Option };
+}
+
+PowerUpData Scenes::CreatePowerup()
+{
+    Scene* powerupScene = new Scene("Powerup", { screenW, screenH });
+
+    // Titre
+    std::string titreStr = "Choisissez un pouvoir !";
+    GameObject* title = new GameObject({ CenterX(titreStr, 50, fontPath), 50.0f });
+    title->AddComponent(new Text(titreStr, 50, White, fontPath));
+    powerupScene->AddGameObject(title);
+        
+
+    // Respawn
+    CreateButton(powerupScene, "Invincibility", "../Asset/Boutton/red_button.png", CenterY(),
+        [this](GameObject* obj) {
+            PlayerState::GetInstance().activePowerup = PowerupType::Invincibility;
+            LevelData levelData = CreateLevel();
+            Engine::GetInstance()->getSceneModule()->SetPendingScene(levelData.scene);
+        });
+
+
+    return { powerupScene };
 }
 
 
@@ -243,12 +268,19 @@ LevelData Scenes::CreateLevel()
     gene->GenerateLevel();
     gene->DrawAllLevels(mainScene);
 
+    level->onLevelComplete = [this]{
+        PowerUpData powerupData = CreatePowerup();
+        Engine::GetInstance()->getSceneModule()->SetPendingScene(powerupData.scene);
+        };
+
     mainScene->AddOnStartCallback([player, mainScene, level]() {
         MovePl(player, mainScene);
+
 
         Event::CreateEvent(-2, [level]() {
             static sf::Clock clock;
             float deltaTime = clock.restart().asSeconds();
+            PlayerState::GetInstance().UpdateInvincibility(deltaTime);
             level->Move(deltaTime);
             });
 
@@ -256,6 +288,7 @@ LevelData Scenes::CreateLevel()
             Variables* var = player->GetComponent<Variables>();
             if (var != nullptr && var->getFloat("isDead") == 1.0f)
             {
+                PlayerState::GetInstance().Reset();
                 level->Reset();
                 player->SetPosition({ 200.f, 200.f });
                 var->setFloat("velocityY", 0.0f);

@@ -9,7 +9,11 @@
 #include "Level.h"
 #include "Gen.h"
 
+
+
 GameObject* createPlayer();
 
 void MovePl(GameObject* player, Scene* scene);
 void updColision(GameObject* player, Elements* elem);
+
+

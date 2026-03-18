@@ -16,11 +16,17 @@ private:
 		SIKE = 2,
 		ENNEMI = 3
 	};
+
 	Elements* elem;
 	std::vector<std::vector<int>> LevelParts;
 	std::vector<GameObject*> spawnedObjects;
 	std::vector<sf::Vector2f> startPositions;
+	
+
 public:
+	std::function<void()> onLevelComplete = nullptr;
+
+
 	Level(int diff, int ord);
 	~Level();
 	void Draw(Scene* scene, std::vector<std::vector<int>> part, float offsetX);

@@ -11,6 +11,9 @@
 extern unsigned int screenW;
 extern unsigned int screenH;
 
+struct PowerUpData {
+	Scene* scene;
+};
 
 struct GameOverData {
 	Scene* scene;
@@ -67,6 +70,8 @@ public:
 	MainData CreateMain();
 
 	OptionData CreateOption(MainData mainData);
+
+	PowerUpData CreatePowerup();
 
 	LevelData CreateLevel();
 

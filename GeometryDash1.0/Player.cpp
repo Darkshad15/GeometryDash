@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "PlayerState.h"
 #include <iostream>
 
 GameObject* createPlayer()
@@ -40,6 +41,8 @@ void MovePl(GameObject* player, Scene* scene) {
 				Variables* var = player->GetComponent<Variables>();
 
 				if (var != nullptr) {
+
+
 					float velocityY = var->getFloat("velocityY");
 					float gravity = var->getFloat("gravity");
 
@@ -110,23 +113,47 @@ void MovePl(GameObject* player, Scene* scene) {
 					}
 
 					// Game over
-					
-					if (isDead) {
-						std::cout << "Mur ou pic percut� ! Mort du joueur." << std::endl;
-
-						// On d�clenche l'Event 1 qui g�re le nettoyage et le restart dans Main.cpp
-						//Event::SetEventTrue(-3);
-						var->setFloat("isDead", 1.0f);
-		
+					if (isDead)
+					{
+						if (!PlayerState::GetInstance().isInvincible)
+						{
+							// A-t-il le powerup invincibilité ?
+							if (PlayerState::GetInstance().activePowerup == PowerupType::Invincibility)
+							{
+								// Consommer le powerup et activer le flash
+								PlayerState::GetInstance().ActivateInvincibility();
+								PlayerState::GetInstance().activePowerup = PowerupType::None;
+								std::cout << "Invincibilite activee !" << std::endl;
+							}
+							else
+							{
+								// Pas de powerup → mort normale
+								var->setFloat("isDead", 1.0f);
+							}
+						}
+						
 					}
-					else {
-						// On applique la nouvelle position UNIQUEMENT si le joueur est en vie
+					else  
+					{
 						player->getTransform().pos.y = nextY;
 						var->setFloat("velocityY", velocityY);
 					}
-				
-					
-					
+
+					// Clignotement — séparé, pas dans le else
+					Shape* shape = player->GetComponent<Shape>();
+					if (shape != nullptr)
+					{
+						if (PlayerState::GetInstance().isInvincible)
+						{
+							float t = PlayerState::GetInstance().invincibilityTimer;
+							bool visible = (int)(t * 10) % 2 == 0;
+							shape->setVisible(visible);
+						}
+						else
+						{
+							shape->setVisible(true);
+						}
+					}
 
 					if (touchGround) {
 						var->setFloat("isGrounded", 1.0f);
