@@ -48,6 +48,7 @@ void Level::Draw(Scene* scene, std::vector<std::vector<int>> part, float offsetX
             case 0: continue;
             case 1: obj = elem->createBlock(); break;
             case 2: obj = elem->createSpike(); break;
+            case 3: obj = elem->createCircle(); break;
             default: break;
             }
 
