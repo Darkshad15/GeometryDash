@@ -232,26 +232,38 @@ OptionData Scenes::CreateOption(MainData mainData)
 
 LevelData Scenes::CreateLevel()
 {
-    Scene* mainScene = new Scene("Main", { 1500, 600 });
-
+    Scene* mainScene = new Scene("Main", { screenW, screenH });
     Gen* gene = new Gen(mainScene);
-    Elements* el = new Elements();
-    Level* level = gene->getLevel();
+    Level* level = gene->getLevel(); // pointeur brut
 
     GameObject* player = createPlayer();
     MovePl(player, mainScene);
-    updColision(player, el);
-    mainScene->AddGameObject(player);
 
+    mainScene->AddGameObject(player);
     gene->GenerateLevel();
     gene->DrawAllLevels(mainScene);
+    mainScene->Start();
 
-    mainScene->AddOnStartCallback([level]() {
-        Event::CreateEvent(-1, [level]() {
-            static sf::Clock clock;
-            float deltaTime = clock.restart().asSeconds();
-            level->Move(deltaTime);
-            });
+    Event::CreateEvent(-2, [level]() {
+        static sf::Clock clock;
+        float deltaTime = clock.restart().asSeconds();
+        level->Move(deltaTime);
+        });
+
+    Event::CreateEvent(-3, [level, player]() {
+        Variables* var = player->GetComponent<Variables>();
+        if (var != nullptr && var->getFloat("isDead") == 1.0f)
+        {
+            level->Reset();
+            player->SetPosition({ 200.f, 200.f });
+            Variables* var = player->GetComponent<Variables>();
+            if (var != nullptr) {
+                var->setFloat("velocityY", 0.0f);
+                var->setFloat("isGrounded", 0.0f);
+            }
+            player->setActive(true);
+            var->setFloat("isDead", 0.0f);
+        }
         });
 
     return { mainScene };

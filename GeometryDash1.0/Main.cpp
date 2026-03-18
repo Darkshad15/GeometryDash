@@ -21,7 +21,7 @@ int main()
 
 
     Engine engine({ screenW, screenH }, "Mon Premier Jeu");
-
+    InputManager::Initialize(&engine.getSceneModule()->getWindow());
     Scenes scenes;
     scenes.Start();
 
