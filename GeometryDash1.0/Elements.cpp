@@ -18,7 +18,10 @@ void Elements::logic()
 
 	}
 	else if (type == 3) {
-
+		if (gameObject) {
+			Collider* col = gameObject->GetComponent<Collider>();
+			Shape* rect = gameObject->GetComponent<Shape>();
+		}
 	}
 }
 
@@ -50,9 +53,11 @@ GameObject* Elements::createCircle()
 	Shape* shape = new Shape();
 	shape->setCircle({ 64.f }, sf::Color(255, 255, 255));
 	Variables* var = new Variables();
+	Collider* collision = new Collider();
 	var->addInt("Type", 3);
 	type = var->getInt("Type");
 	block->AddComponent(shape);
+	block->AddComponent(collision);
 	return block;
 }
 
