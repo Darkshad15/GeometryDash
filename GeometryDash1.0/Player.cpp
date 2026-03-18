@@ -56,29 +56,39 @@ void MovePl(GameObject* player, Scene* scene) {
 					bool isDead = false; // On ajoute un marqueur de mort
 
 					for (GameObject* obj : scene->getLstObj()) {
-						if (obj != player && obj->getActive() && obj->GetComponent<Collider>() != nullptr) {
+						if (obj == player || !obj->getActive()) continue;
 
-							// Dimensions du bloc
-							float bx = obj->getTransform().pos.x;
-							float by = obj->getTransform().pos.y;
-							float bw = 64.f;
-							float bh = 64.f;
+						float bx = obj->getTransform().pos.x;
+						float by = obj->getTransform().pos.y;
+						float bw = 64.f;
+						float bh = 64.f;
 
-							// On vérifie si on est aligné horizontalement avec le bloc (pour ignorer les fissures)
-							bool overlapX = (px + pw > bx + 5.f && px < bx + bw - 5.f);
+						// === SPIKE : triangle ===
+						TriangleCollider* tc = obj->GetComponent<TriangleCollider>();
+						if (tc != nullptr) {
+							// Tester les 4 coins du joueur contre le triangle
+							bool hit = tc->containsPoint({ px,      py })
+								|| tc->containsPoint({ px + pw,  py })
+								|| tc->containsPoint({ px,      py + ph })
+								|| tc->containsPoint({ px + pw,  py + ph });
+							if (hit) {
+								isDead = true;
+							}
+							continue; // pas besoin de vérifier la collision rectangulaire
+						}
 
-							if (overlapX) {
+						// === BLOC NORMAL : rectangle ===
+						if (obj->GetComponent<Collider>() == nullptr) continue;
 
-
-								if (velocityY > 0.0f && py + ph <= by + 15.f && nextY + ph >= by) {
-									nextY = by - ph;     // On se pose pile sur le bloc
-									velocityY = 0.0f;    // On arrête de tomber
-									touchGround = true;  // On valide le sol pour pouvoir sauter
-								}
-								//Si on n'a pas atterri, on regarde si on rentre dans le bloc
-								else if (nextY + ph > by + 5.f && nextY < by + bh - 5.f) {
-									isDead = true;
-								}
+						bool overlapX = (px + pw > bx + 5.f && px < bx + bw - 5.f);
+						if (overlapX) {
+							if (velocityY > 0.0f && py + ph <= by + 15.f && nextY + ph >= by) {
+								nextY = by - ph;
+								velocityY = 0.0f;
+								touchGround = true;
+							}
+							else if (nextY + ph > by + 5.f && nextY < by + bh - 5.f) {
+								isDead = true;
 							}
 						}
 					}
