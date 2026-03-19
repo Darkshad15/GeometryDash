@@ -118,29 +118,41 @@ void MovePl(GameObject* player, Scene* scene) {
 					{
 						if (!PlayerState::GetInstance().isInvincible)
 						{
-							// A-t-il le powerup invincibilité ?
 							if (PlayerState::GetInstance().activePowerup == PowerupType::Invincibility)
 							{
-								// Consommer le powerup et activer le flash
 								PlayerState::GetInstance().ActivateInvincibility();
 								PlayerState::GetInstance().activePowerup = PowerupType::None;
 								std::cout << "Invincibilite activee !" << std::endl;
 							}
 							else
 							{
-								// Pas de powerup → mort normale
-								var->setFloat("isDead", 1.0f);
+								
+								PlayerState::GetInstance().TakeDamage();
+
+								if (PlayerState::GetInstance().IsDead())
+								{
+									
+									var->setFloat("isDead", 1.0f);
+								}
+								else
+								{
+									
+									PlayerState::GetInstance().ActivateInvincibility();
+									std::cout << "HP restants : " << PlayerState::GetInstance().currentHp
+										<< "/" << PlayerState::GetInstance().maxHp << std::endl;
+								}
 							}
 						}
-						
 					}
-					else  
+
+					
+					if (var->getFloat("isDead") == 0.0f)
 					{
 						player->getTransform().pos.y = nextY;
 						var->setFloat("velocityY", velocityY);
 					}
 
-					// Clignotement — séparé, pas dans le else
+					
 					Shape* shape = player->GetComponent<Shape>();
 					if (shape != nullptr)
 					{
@@ -163,6 +175,7 @@ void MovePl(GameObject* player, Scene* scene) {
 						var->setFloat("isGrounded", 0.0f);
 					}
 				}
+				
 			}
 		});
 

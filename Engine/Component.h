@@ -87,7 +87,11 @@ public:
 	sf::FloatRect getBounds() { return text.getLocalBounds(); }
 
 	//Set
-	void setText(std::string text) { txt = text; }
+	
+	void setText(std::string newText) {
+		txt = newText;
+		text.setString(newText); 
+	}
 
 	//Autres
 	void Start() override;

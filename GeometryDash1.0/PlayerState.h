@@ -10,6 +10,23 @@ public:
 
     PowerupType activePowerup = PowerupType::None;
     
+    //HP 
+    int maxHp = 2;
+    int currentHp = 2;
+
+
+    void TakeDamage() {
+        if (isInvincible) return;
+        currentHp--;
+    }
+
+    bool IsDead() const { return currentHp <= 0; }
+
+    void AddHp(int amount = 1) {
+        maxHp += amount;       
+        currentHp += amount;    
+    }
+
 
     // Invincibilité
     bool isInvincible = false;
@@ -32,9 +49,15 @@ public:
         }
     }
 
-
     void Reset() {
         activePowerup = PowerupType::None;
+        isInvincible = false;
+        invincibilityTimer = 0.f;
+        currentHp = maxHp; // reset HP au max
+    }
+
+    void SoftReset() {
+        // Reset après mort — garde les HP et maxHp
         isInvincible = false;
         invincibilityTimer = 0.f;
     }

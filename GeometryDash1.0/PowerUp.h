@@ -2,7 +2,8 @@
 
 enum class PowerupType {
     None,
-    Invincibility
+    Invincibility,
+    HpUp
 };
 
 

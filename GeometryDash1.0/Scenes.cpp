@@ -119,7 +119,6 @@ void Scenes::Start()
 MainData Scenes::CreateMain()
 {
     Scene* mainMenu = new Scene("MainMenu", { screenW, screenH });
-    GameOverData goData = CreateGameover({ mainMenu });   
 
     GameObject* background = new GameObject({ 0, 0 });
     SpriteRenderer* bgSprite = new SpriteRenderer(
@@ -145,9 +144,6 @@ MainData Scenes::CreateMain()
     InputManager::Initialize(&Engine::GetInstance()->getSceneModule()->getWindow());
     CreateButton(mainMenu, "Jouer", "../Asset/Boutton/p_button.png", CenterY(-75),
         [this](GameObject* obj) {
-            
-
-
             PowerUpData powerupData = CreatePowerup();
             Engine::GetInstance()->getSceneModule()->SetPendingScene(powerupData.scene);
         });
@@ -235,6 +231,7 @@ OptionData Scenes::CreateOption(MainData mainData)
             Engine::GetInstance()->getSceneModule()->SetPendingScene(optionData.scene);
         }, 0.f, 0.1f, centreBlocX);
 
+
     InputManager::Initialize(&Engine::GetInstance()->getSceneModule()->getWindow());
     CreateButton(Option, "Return", "../Asset/Boutton/p_button.png", CenterY(200),
         [this](GameObject* obj) {
@@ -255,7 +252,13 @@ PowerUpData Scenes::CreatePowerup()
     GameObject* title = new GameObject({ CenterX(titreStr, 50, fontPath), 50.0f });
     title->AddComponent(new Text(titreStr, 50, White, fontPath));
     powerupScene->AddGameObject(title);
-        
+    
+    CreateButton(powerupScene, "+1 Vie", "../Asset/Boutton/p_button.png", CenterY(+150),
+        [this](GameObject* obj) {
+            PlayerState::GetInstance().activePowerup = PowerupType::HpUp;
+            LevelData levelData = CreateLevel();
+            Engine::GetInstance()->getSceneModule()->SetPendingScene(levelData.scene);
+        });
 
     // Respawn
     CreateButton(powerupScene, "Invincibility", "../Asset/Boutton/p_button.png", CenterY(),
@@ -273,46 +276,81 @@ PowerUpData Scenes::CreatePowerup()
 LevelData Scenes::CreateLevel()
 {
     Scene* mainScene = new Scene("Main", { screenW, screenH });
-
     Gen* gene = new Gen(mainScene);
     Level* level = gene->getLevel();
-
     GameObject* player = createPlayer();
     mainScene->AddGameObject(player);
     gene->GenerateLevel();
     gene->DrawAllLevels(mainScene);
-
-    level->onLevelComplete = [this]{
+    // Affichage HP
+    GameObject* hpDisplay = new GameObject({ 10.f, 10.f });
+    hpDisplay->AddComponent(new Text("HP: 2/2", 25, sf::Color::Red, fontPath));
+    mainScene->AddGameObject(hpDisplay);
+    // Callback fin de niveau
+    level->onLevelComplete = [this] {
         PowerUpData powerupData = CreatePowerup();
         Engine::GetInstance()->getSceneModule()->SetPendingScene(powerupData.scene);
         };
 
-    mainScene->AddOnStartCallback([player, mainScene, level]() {
+
+    mainScene->AddOnStartCallback([this,player, mainScene, level, hpDisplay]() {
+        // Appliquer le powerup HpUp
+        if (PlayerState::GetInstance().activePowerup == PowerupType::HpUp)
+        {
+            PlayerState::GetInstance().AddHp();
+            PlayerState::GetInstance().activePowerup = PowerupType::None;
+        }
         MovePl(player, mainScene);
 
 
+        // Mise à jour HP display
+        Event::CreateEvent(-4, [hpDisplay]() {
+            Text* txt = hpDisplay->GetComponent<Text>();
+            if (txt != nullptr)
+            {
+                std::string hpStr = "HP: "
+                    + std::to_string(PlayerState::GetInstance().currentHp)
+                    + "/"
+                    + std::to_string(PlayerState::GetInstance().maxHp);
+                txt->setText(hpStr);
+            }
+            });
+        // Défilement niveau
         Event::CreateEvent(-2, [level]() {
             static sf::Clock clock;
             float deltaTime = clock.restart().asSeconds();
             PlayerState::GetInstance().UpdateInvincibility(deltaTime);
             level->Move(deltaTime);
             });
-
-        Event::CreateEvent(-3, [level, player]() {
+        // Reset après mort
+        Event::CreateEvent(-3, [this, level, player]() {
             Variables* var = player->GetComponent<Variables>();
             if (var != nullptr && var->getFloat("isDead") == 1.0f)
             {
-                PlayerState::GetInstance().Reset();
-                level->Reset();
-                player->SetPosition({ 200.f, 200.f });
-                var->setFloat("velocityY", 0.0f);
-                var->setFloat("isGrounded", 0.0f);
-                player->setActive(true);
-                var->setFloat("isDead", 0.0f);
+                if (PlayerState::GetInstance().IsDead())
+                {
+                    player->setActive(false);
+                    var->setFloat("isDead", 0.0f);
+
+                    PlayerState::GetInstance().Reset();
+
+                    // Direct vers GameOver sans passer par CreateMain
+                    GameOverData goData = CreateGameover({ nullptr });
+                    Engine::GetInstance()->getSceneModule()->SetPendingScene(goData.scene);
+                }
+                else
+                {
+                    PlayerState::GetInstance().SoftReset();
+                    level->Reset();
+                    player->SetPosition({ 200.f, 200.f });
+                    var->setFloat("velocityY", 0.0f);
+                    var->setFloat("isGrounded", 0.0f);
+                    player->setActive(true);
+                    var->setFloat("isDead", 0.0f);
+                }
             }
             });
         });
-
     mainScene->Start();
     return { mainScene };
 }
