@@ -267,6 +267,7 @@ private:
 	sf::Texture texture;
 	Type currentType = Type::NONE;
 	bool isVisible = true;
+	float currentRotation = 0.f;
 public:
 	Shape();
 	sf::FloatRect getBounds();
@@ -282,6 +283,9 @@ public:
 	void Render(sf::RenderWindow& window);
 	void setTexture(const std::string& path);
 	void setTextureRect(sf::IntRect rect);
+	void setRotation(float angle);
+	void setCurrentRotation(float r) { currentRotation = r; }
+	float getCurrentRotation() { return currentRotation; }
 };
 
 

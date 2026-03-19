@@ -19,6 +19,7 @@ GameObject* createPlayer()
 	var->addFloat("jumpForce", -11.35f);
 	var->addFloat("isGrounded", 0.0f); 
 	var->addFloat("isDead", 0.0f);
+	var->addBool("asFinished", false);
 	return player;
 
 }
@@ -43,20 +44,18 @@ void MovePl(GameObject* player, Scene* scene) {
 
 				if (var != nullptr) {
 
-
 					float velocityY = var->getFloat("velocityY");
 					float gravity = var->getFloat("gravity");
 
 					velocityY += gravity;
 					float nextY = player->getTransform().pos.y + velocityY;
 
-					// Dimensions du joueur
 					float px = player->getTransform().pos.x;
 					float py = player->getTransform().pos.y;
 					float pw = 64.f;
 					float ph = 64.f;
 					bool touchGround = false;
-					bool isDead = false; // On ajoute un marqueur de mort
+					bool isDead = false;
 
 					for (GameObject* obj : scene->getLstObj()) {
 						if (obj == player || !obj->getActive()) continue;
@@ -66,34 +65,24 @@ void MovePl(GameObject* player, Scene* scene) {
 						float bw = 60.f;
 						float bh = 60.f;
 
-						// === SPIKE : triangle ===
+						
 						TriangleCollider* tc = obj->GetComponent<TriangleCollider>();
 						if (tc != nullptr) {
-							// Tester les 4 coins du joueur contre le triangle
 							bool hit = tc->containsPoint({ px,      py })
 								|| tc->containsPoint({ px + pw,  py })
 								|| tc->containsPoint({ px,      py + ph })
 								|| tc->containsPoint({ px + pw,  py + ph });
-							if (hit) {
-								isDead = true;
-							}
-							continue; // pas besoin de v�rifier la collision rectangulaire
-						}
-
-
-						// === ORBE DE SAUT : cercle ===
-						CircleCollider* cc = obj->GetComponent<CircleCollider>();
-						if (cc != nullptr) {
-
-							if (cc->DoesCollide(player)) {
-
-								touchGround = true;
-							}
-
+							if (hit) isDead = true;
 							continue;
 						}
 
-						// === BLOC NORMAL : rectangle ===
+						
+						CircleCollider* cc = obj->GetComponent<CircleCollider>();
+						if (cc != nullptr) {
+							if (cc->DoesCollide(player)) touchGround = true;
+							continue;
+						}
+
 						if (obj->GetComponent<Collider>() == nullptr) continue;
 
 						bool overlapX = (px + pw > bx + 5.f && px < bx + bw - 5.f);
@@ -106,14 +95,13 @@ void MovePl(GameObject* player, Scene* scene) {
 							else if (nextY + ph > by + 5.f && nextY < by + bh - 5.f) {
 								isDead = true;
 							}
-							if (nextY > 610.f) {
-								isDead = true;
-							}
 						}
-
 					}
 
-					// Game over
+					if (player->getTransform().pos.x > 400) {
+						var->addBool("asFinished", true);
+					}
+
 					if (isDead)
 					{
 						if (!PlayerState::GetInstance().isInvincible)
@@ -126,17 +114,11 @@ void MovePl(GameObject* player, Scene* scene) {
 							}
 							else
 							{
-								
 								PlayerState::GetInstance().TakeDamage();
-
 								if (PlayerState::GetInstance().IsDead())
-								{
-									
 									var->setFloat("isDead", 1.0f);
-								}
 								else
 								{
-									
 									PlayerState::GetInstance().ActivateInvincibility();
 									std::cout << "HP restants : " << PlayerState::GetInstance().currentHp
 										<< "/" << PlayerState::GetInstance().maxHp << std::endl;
@@ -145,7 +127,6 @@ void MovePl(GameObject* player, Scene* scene) {
 						}
 					}
 
-					
 					if (var->getFloat("isDead") == 0.0f)
 					{
 						player->getTransform().pos.y = nextY;
@@ -156,6 +137,7 @@ void MovePl(GameObject* player, Scene* scene) {
 					Shape* shape = player->GetComponent<Shape>();
 					if (shape != nullptr)
 					{
+						
 						if (PlayerState::GetInstance().isInvincible)
 						{
 							float t = PlayerState::GetInstance().invincibilityTimer;
@@ -166,17 +148,28 @@ void MovePl(GameObject* player, Scene* scene) {
 						{
 							shape->setVisible(true);
 						}
-					}
 
-					if (touchGround) {
+						
+						if (touchGround)
+						{
+							float nearest = std::round(shape->getCurrentRotation() / 90.f) * 90.f;
+							shape->setCurrentRotation(nearest);
+							shape->setRotation(nearest);
+						}
+						else
+						{
+							float newRot = shape->getCurrentRotation() + std::abs(velocityY) * (90.f / 64.f);
+							shape->setCurrentRotation(newRot);
+							shape->setRotation(newRot);
+						}
+					}
+					
+
+					if (touchGround)
 						var->setFloat("isGrounded", 1.0f);
-					}
-					else {
+					else
 						var->setFloat("isGrounded", 0.0f);
-					}
 				}
-				
 			}
 		});
-
 }

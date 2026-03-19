@@ -9,7 +9,10 @@ void Shape::Start() {
 void Shape::Update() {
     float x = owner->getTransform().pos.x;
     float y = owner->getTransform().pos.y;
-    if (currentType == Type::RECTANGLE) rectangle.setPosition({x,y});
+    if (currentType == Type::RECTANGLE) {
+        rectangle.setOrigin({ 32.f, 32.f });
+        rectangle.setPosition({ x + 32.f, y + 32.f });
+    }
     else if (currentType == Type::CIRCLE) circle.setPosition({ x,y });
     else if (currentType == Type::TRIANGLE) triangle.setPosition({ x,y });
 }
@@ -66,4 +69,11 @@ void Shape::setTextureRect(sf::IntRect rect)
 }
 void Shape::setVisible(bool Visible) {
     isVisible = Visible;
+}
+
+void Shape::setRotation(float angle)
+{
+    if (currentType == Type::RECTANGLE) rectangle.setRotation(sf::degrees(angle));
+    else if (currentType == Type::CIRCLE) circle.setRotation(sf::degrees(angle));
+    else if (currentType == Type::TRIANGLE) triangle.setRotation(sf::degrees(angle));
 }
