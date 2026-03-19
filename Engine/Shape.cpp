@@ -50,6 +50,20 @@ void Shape::Render(sf::RenderWindow& window) {
     else if (currentType == Type::TRIANGLE)  window.draw(triangle);
 }
 
+void Shape::setTexture(const std::string& path)
+{
+    texture.loadFromFile(path);  
+    if (currentType == Type::RECTANGLE) rectangle.setTexture(&texture);
+    if (currentType == Type::CIRCLE)    circle.setTexture(&texture);
+    if (currentType == Type::TRIANGLE)  triangle.setTexture(&texture);
+}
+void Shape::setTextureRect(sf::IntRect rect)
+{
+    
+    if (currentType == Type::RECTANGLE)  rectangle.setTextureRect(rect);;
+    if (currentType == Type::CIRCLE)     circle.setTextureRect(rect);;
+    if (currentType == Type::TRIANGLE)   triangle.setTextureRect(rect);;
+}
 void Shape::setVisible(bool Visible) {
     isVisible = Visible;
 }
