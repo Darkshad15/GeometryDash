@@ -28,7 +28,7 @@ void Scenes::CreateButton(Scene* scene, const std::string& texte, const std::str
     float btnW = 874 * scale;
     float btnH = 320 * scale;
     float btnX = (posX < 0)
-        ? (screenW / 2.0f) - (btnW / 2.0f)  // centré par défaut
+        ? (screenW / 2.0f) - (btnW / 2.0f)  // centrï¿½ par dï¿½faut
         : posX - (btnW / 2.0f);              // position custom
     float btnY = posY - (btnH / 2.0f);
 
@@ -41,13 +41,13 @@ void Scenes::CreateButton(Scene* scene, const std::string& texte, const std::str
     btn->setClickable(true);
     scene->AddGameObject(btn);
 
-    // Texte centré sur le bouton
+    // Texte centrï¿½ sur le bouton
     sf::Font font(fontPath);
     sf::Text sfText(font, texte, 40);
     auto txtBounds = sfText.getLocalBounds();
     float txtX = (posX < 0)
         ? (screenW / 2.0f) - (txtBounds.size.x / 2.0f) - txtBounds.position.x
-        : posX - (txtBounds.size.x / 2.0f) - txtBounds.position.x; // centré sur posX
+        : posX - (txtBounds.size.x / 2.0f) - txtBounds.position.x; // centrï¿½ sur posX
     float txtY = posY - (txtBounds.size.y / 2.0f) - txtBounds.position.y;
 
     GameObject* txt = new GameObject({ txtX, txtY });
@@ -91,7 +91,7 @@ void Scenes::Start()
         Settings::GetInstance().ToggleFullscreen();
         };
 
-    // Callback après changement de résolution
+    // Callback aprï¿½s changement de rï¿½solution
     Engine::GetInstance()->getSceneModule()->onFullscreenApplied = [this]() {
         std::string sceneName = Engine::GetInstance()->getSceneModule()->GetActiveScene()->getName();
 
@@ -208,7 +208,7 @@ OptionData Scenes::CreateOption()
     Option->AddGameObject(volTxt);
 
 
-    // Bouton + aligné sur le centre du texte
+    // Bouton + alignï¿½ sur le centre du texte
     CreateButton(Option, "+", "../Asset/Boutton/p_button.png", CenterY(-20),
         [this](GameObject* obj) {
             Settings::GetInstance().SetVolume(Settings::GetInstance().GetVolume() + 10);
@@ -218,7 +218,7 @@ OptionData Scenes::CreateOption()
 
 
 
-    // Bouton - aligné sur le centre du texte
+    // Bouton - alignï¿½ sur le centre du texte
     CreateButton(Option, "-", "../Asset/Boutton/p_button.png", CenterY(+40),
         [this](GameObject* obj) {
             Settings::GetInstance().SetVolume(Settings::GetInstance().GetVolume() - 10);
@@ -272,10 +272,27 @@ PowerUpData Scenes::CreatePowerup()
 LevelData Scenes::CreateLevel()
 {
     auto gameOverTriggered = std::make_shared<bool>(false);
-
     Scene* mainScene = new Scene("Main", { screenW, screenH });
     Gen* gene = new Gen(mainScene);
     Level* level = gene->getLevel();
+
+    GameObject* background = new GameObject({ 0,0 });
+    SpriteRenderer* bg = new SpriteRenderer(
+        "Assets/image.png", 
+        { 3200, 1532 },      
+        { 0, 0 }
+    );
+
+    sf::Vector2u winSize = Engine::GetInstance()->getSceneModule()->getWindow().getSize();
+
+   
+    float scaleX = (float)winSize.x / 3200.f;
+    float scaleY = (float)winSize.y / 1532.f;
+    float scale = std::max(scaleY, scaleX);
+    bg->setScale(scaleX,scaleY);
+    
+    background->AddComponent(bg);
+    mainScene->AddGameObject(background);
     GameObject* player = createPlayer();
     mainScene->AddGameObject(player);
     gene->GenerateLevel();
@@ -301,7 +318,7 @@ LevelData Scenes::CreateLevel()
         MovePl(player, mainScene);
 
 
-        // Mise à jour HP display
+        // Mise ï¿½ jour HP display
         Event::CreateEvent(-4, [hpDisplay]() {
             Text* txt = hpDisplay->GetComponent<Text>();
             if (txt != nullptr)
@@ -313,14 +330,14 @@ LevelData Scenes::CreateLevel()
                 txt->setText(hpStr);
             }
             });
-        // Défilement niveau
+        // Dï¿½filement niveau
         Event::CreateEvent(-2, [level]() {
             static sf::Clock clock;
             float deltaTime = clock.restart().asSeconds();
             PlayerState::GetInstance().UpdateInvincibility(deltaTime);
             level->Move(deltaTime);
             });
-        // Reset après mort
+        // Reset aprï¿½s mort
         Event::CreateEvent(-3, [this, level, player, gameOverTriggered]() {
             
 
