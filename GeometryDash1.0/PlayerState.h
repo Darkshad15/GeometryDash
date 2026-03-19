@@ -10,7 +10,7 @@ public:
 
     PowerupType activePowerup = PowerupType::None;
     
-    //HP 
+    int baseHp = 2;  
     int maxHp = 2;
     int currentHp = 2;
 
@@ -53,7 +53,9 @@ public:
         activePowerup = PowerupType::None;
         isInvincible = false;
         invincibilityTimer = 0.f;
-        currentHp = maxHp; // reset HP au max
+        currentHp = maxHp; 
+        maxHp = baseHp;
+        currentHp = baseHp;
     }
 
     void SoftReset() {

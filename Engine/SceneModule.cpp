@@ -89,6 +89,7 @@ void SceneModule::Update()
         if (pendingScene != nullptr)
         {
             InputManager::Clear();
+            Event::ClearAllEvents();
             SetActiveScene(pendingScene);
             pendingScene->Start();
             pendingScene = nullptr;

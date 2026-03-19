@@ -69,7 +69,7 @@ public:
 
 	MainData CreateMain();
 
-	OptionData CreateOption(MainData mainData);
+	OptionData CreateOption();
 
 	PowerUpData CreatePowerup();
 
@@ -79,7 +79,7 @@ public:
 
 	Scene* CreatePause();
 
-	GameOverData CreateGameover(MainData mainData);
+	GameOverData CreateGameover();
 
 };
 

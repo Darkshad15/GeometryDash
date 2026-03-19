@@ -96,8 +96,7 @@ void Scenes::Start()
         std::string sceneName = Engine::GetInstance()->getSceneModule()->GetActiveScene()->getName();
 
         if (sceneName == "Option") {
-            MainData newMain = CreateMain();
-            OptionData optionData = CreateOption(newMain);
+            OptionData optionData = CreateOption();
             Engine::GetInstance()->getSceneModule()->SetPendingScene(optionData.scene);
         }
         else if (sceneName == "MainMenu") {
@@ -105,8 +104,7 @@ void Scenes::Start()
             Engine::GetInstance()->getSceneModule()->SetPendingScene(newMain.scene);
         }
         else if (sceneName == "Game Over") {
-            MainData newMain = CreateMain();
-            GameOverData goData = CreateGameover(newMain);
+            GameOverData goData = CreateGameover(); 
             Engine::GetInstance()->getSceneModule()->SetPendingScene(goData.scene);
         }
         };
@@ -150,8 +148,7 @@ MainData Scenes::CreateMain()
 
     CreateButton(mainMenu, "Option", "../Asset/Boutton/p_button.png", CenterY(+25),
         [this](GameObject* obj) {
-            MainData newMain = CreateMain();
-            OptionData optionData = CreateOption(newMain);
+            OptionData optionData = CreateOption();
             Engine::GetInstance()->getSceneModule()->SetPendingScene(optionData.scene);
         });
 
@@ -163,7 +160,7 @@ MainData Scenes::CreateMain()
     return { mainMenu };
 }
 
-OptionData Scenes::CreateOption(MainData mainData)
+OptionData Scenes::CreateOption()
 {
     Scene* Option = new Scene("Option", { screenW , screenH });
     std::string titreStr = "Option";
@@ -215,8 +212,7 @@ OptionData Scenes::CreateOption(MainData mainData)
     CreateButton(Option, "+", "../Asset/Boutton/p_button.png", CenterY(-20),
         [this](GameObject* obj) {
             Settings::GetInstance().SetVolume(Settings::GetInstance().GetVolume() + 10);
-            MainData newMain = CreateMain();
-            OptionData optionData = CreateOption(newMain);
+            OptionData optionData = CreateOption();
             Engine::GetInstance()->getSceneModule()->SetPendingScene(optionData.scene);
         }, 0.f, 0.1f, centreBlocX);
 
@@ -226,8 +222,8 @@ OptionData Scenes::CreateOption(MainData mainData)
     CreateButton(Option, "-", "../Asset/Boutton/p_button.png", CenterY(+40),
         [this](GameObject* obj) {
             Settings::GetInstance().SetVolume(Settings::GetInstance().GetVolume() - 10);
-            MainData newMain = CreateMain();
-            OptionData optionData = CreateOption(newMain);
+
+            OptionData optionData = CreateOption();
             Engine::GetInstance()->getSceneModule()->SetPendingScene(optionData.scene);
         }, 0.f, 0.1f, centreBlocX);
 
@@ -275,6 +271,8 @@ PowerUpData Scenes::CreatePowerup()
 
 LevelData Scenes::CreateLevel()
 {
+    auto gameOverTriggered = std::make_shared<bool>(false);
+
     Scene* mainScene = new Scene("Main", { screenW, screenH });
     Gen* gene = new Gen(mainScene);
     Level* level = gene->getLevel();
@@ -293,7 +291,7 @@ LevelData Scenes::CreateLevel()
         };
 
 
-    mainScene->AddOnStartCallback([this,player, mainScene, level, hpDisplay]() {
+    mainScene->AddOnStartCallback([this,player, mainScene, level, hpDisplay, gameOverTriggered]() {
         // Appliquer le powerup HpUp
         if (PlayerState::GetInstance().activePowerup == PowerupType::HpUp)
         {
@@ -323,19 +321,21 @@ LevelData Scenes::CreateLevel()
             level->Move(deltaTime);
             });
         // Reset après mort
-        Event::CreateEvent(-3, [this, level, player]() {
+        Event::CreateEvent(-3, [this, level, player, gameOverTriggered]() {
+            
+
             Variables* var = player->GetComponent<Variables>();
-            if (var != nullptr && var->getFloat("isDead") == 1.0f)
+            if (var != nullptr && var->getFloat("isDead") == 1.0f && !(*gameOverTriggered))
             {
                 if (PlayerState::GetInstance().IsDead())
                 {
+                    *gameOverTriggered = true; 
+
+                    var->setFloat("isDead", -1.0f);
                     player->setActive(false);
-                    var->setFloat("isDead", 0.0f);
 
-                    PlayerState::GetInstance().Reset();
 
-                    // Direct vers GameOver sans passer par CreateMain
-                    GameOverData goData = CreateGameover({ nullptr });
+                    GameOverData goData = CreateGameover();
                     Engine::GetInstance()->getSceneModule()->SetPendingScene(goData.scene);
                 }
                 else
@@ -370,7 +370,7 @@ Scene* Scenes::CreatePause()
 
 }
 
-GameOverData Scenes::CreateGameover(MainData mainData)
+GameOverData Scenes::CreateGameover()
 {
     Scene* GameOver = new Scene("Game Over", { screenW, screenH });
     std::string GameOverStr = "Game Over !";
@@ -412,10 +412,12 @@ GameOverData Scenes::CreateGameover(MainData mainData)
     GameOver->AddGameObject(Skull);
 
 
+
     CreateButton(GameOver, "Rejouer", "../Asset/Boutton/p_button.png", CenterY(50),
-        [this](GameObject* obj) {  
-            MainData newMain = CreateMain();  
-            Engine::GetInstance()->getSceneModule()->SetPendingScene(newMain.scene);
+        [this](GameObject* obj) {
+            PlayerState::GetInstance().Reset(); 
+            PowerUpData powerupData = CreatePowerup(); 
+            Engine::GetInstance()->getSceneModule()->SetPendingScene(powerupData.scene);
         }, 3.f);
 
     return { GameOver };
