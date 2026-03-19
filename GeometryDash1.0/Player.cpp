@@ -8,15 +8,16 @@ GameObject* createPlayer()
 	Shape* sprite = new Shape();
 	Variables* var = new Variables();
 	Collider* collider = new Collider();
-	sprite->setRectangle({ 64.f,64.f }, sf::Color::Blue);
+	sprite->setRectangle({ 64.f,64.f }, sf::Color::White);
+	sprite->setTexture("player.png");
+	sprite->setTextureRect({ { 0,0 }, {54, 54} });
 	player->AddComponent(sprite);
 	player->AddComponent(collider);
 	player->AddComponent(var);
 	var->addFloat("velocityY", 0.0f);
 	var->addFloat("gravity", 0.485f);
 	var->addFloat("jumpForce", -12.0f);
-	var->addFloat("groundY", 400.0f);    // Sol temporaire
-	var->addFloat("isGrounded", 0.0f); //1.0f au sol , 0.0f en l'air
+	var->addFloat("isGrounded", 0.0f); 
 	var->addFloat("isDead", 0.0f);
 	return player;
 

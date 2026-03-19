@@ -259,6 +259,7 @@ private:
 	sf::CircleShape triangle;
 	sf::Vector2f size;
 	sf::Color color;
+	sf::Texture texture;
 	Type currentType = Type::NONE;
 	bool isVisible = true;
 public:
@@ -274,6 +275,8 @@ public:
 	void Start() override;
 	void Update() override;
 	void Render(sf::RenderWindow& window);
+	void setTexture(const std::string& path);
+	void setTextureRect(sf::IntRect rect);
 };
 
 
