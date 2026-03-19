@@ -147,4 +147,3 @@ Assets/
 
 - La scène **Pause** est en cours d'implémentation
 - Le **rebind de touches** est prévu mais pas encore implémenté
-- Le **Double Saut** est défini dans `PowerupType` mais pas encore implémenté
