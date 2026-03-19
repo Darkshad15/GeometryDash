@@ -276,6 +276,23 @@ LevelData Scenes::CreateLevel()
 
     Gen* gene = new Gen(mainScene);
     Level* level = gene->getLevel();
+    GameObject* background = new GameObject({ 0,0 });
+    SpriteRenderer* bg = new SpriteRenderer(
+        "Assets/image.png", 
+        { 3200, 1532 },      
+        { 0, 0 }
+    );
+
+    sf::Vector2u winSize = Engine::GetInstance()->getSceneModule()->getWindow().getSize();
+
+   
+    float scaleX = (float)winSize.x / 3200.f;
+    float scaleY = (float)winSize.y / 1532.f;
+    float scale = std::max(scaleY, scaleX);
+    bg->setScale(scaleX,scaleY);
+    
+    background->AddComponent(bg);
+    mainScene->AddGameObject(background);
 
     GameObject* player = createPlayer();
     mainScene->AddGameObject(player);
