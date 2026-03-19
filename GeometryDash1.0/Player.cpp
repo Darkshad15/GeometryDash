@@ -7,7 +7,7 @@ GameObject* createPlayer()
 	Shape* sprite = new Shape();
 	Variables* var = new Variables();
 	Collider* collider = new Collider();
-	sprite->setRectangle({ 64.f,64.f }, sf::Color(77, 77, 255));
+	sprite->setRectangle({ 64.f,64.f }, sf::Color(0, 0, 155));
 	player->AddComponent(sprite);
 	player->AddComponent(collider);
 	player->AddComponent(var);

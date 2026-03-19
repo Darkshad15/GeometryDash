@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 
+
 class GameObject;
 
 class Component
@@ -56,6 +57,7 @@ public:
 	void UpFrame() { currentFrame ++; }
 	void DownFrame() { currentFrame--; }
 	void setScale(float f) { sprite.setScale({ f,f }); }
+	
 
 
 	//Autres

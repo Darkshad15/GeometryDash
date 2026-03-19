@@ -16,10 +16,20 @@ int main()
     Gen* gene = new Gen(mainScene);
     Level* level = gene->getLevel();
     InputManager::Initialize(&engine.getSceneModule()->getWindow());
+    GameObject* background = new GameObject({ 0, -45 });
+    SpriteRenderer* bg = new SpriteRenderer(
+        "Assets/image2.png",
+        { 3200, 1800 },
+        { 0, 0 }
+    );
+    //bg->setFond(true);
+    bg->setScale(0.46875f);
+    background->AddComponent(bg);
     GameObject* player;
     player = createPlayer();
     MovePl(player, mainScene);
-
+    
+    mainScene->AddGameObject(background);
     mainScene->AddGameObject(player);
     engine.getSceneModule()->SetActiveScene(mainScene);
     gene->GenerateLevel();
