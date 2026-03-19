@@ -129,3 +129,4 @@ void SpriteRenderer::setFond(bool B)
 
 
 }
+

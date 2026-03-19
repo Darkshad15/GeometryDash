@@ -6,9 +6,9 @@ void Gen::GenerateLevel()
 	srand(time(0));
 	for (int i = 0; i < 9; i++)
 	{
-		int variante = rand() % 5;
-		std::string fichier = "Assets/" + std::to_string(i) + std::to_string(variante) + ".txt";
-		std::cout << "level " + std::to_string(i) + std::to_string(variante) + " charge" << std::endl;
+		
+		std::string fichier = "Assets/" + std::to_string(i) + ".txt";
+		std::cout << "level " + std::to_string(i) + " charge" << std::endl;
 		AllLeves = lvl->Load(fichier);
 		if (!AllLeves.empty())
 			loaded.push_back(AllLeves);

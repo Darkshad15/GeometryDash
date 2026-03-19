@@ -121,31 +121,45 @@ MainData Scenes::CreateMain()
     Scene* mainMenu = new Scene("MainMenu", { screenW, screenH });
     GameOverData goData = CreateGameover({ mainMenu });   
 
-    // Titre
+    GameObject* background = new GameObject({ 0, 0 });
+    SpriteRenderer* bgSprite = new SpriteRenderer(
+        "../Asset/background/bg.png",
+        { 1920, 1080 },
+        { 1, 1 }
+    );
+
+    sf::Vector2u winSize = Engine::GetInstance()->getSceneModule()->getWindow().getSize();
+    float scaleX = (float)winSize.x / 1920.f; // ta texture bg.png fait 1920x1080
+    float scaleY = (float)winSize.y / 1080.f;
+    bgSprite->setScale(scaleX, scaleY);
+    bgSprite->setFond(true);
+    background->AddComponent(bgSprite);
+    
+
     std::string titreStr = "Gamuo desu !";
     GameObject* title = new GameObject({ CenterX(titreStr, 72, fontPath), 10.0f });
     title->AddComponent(new Text(titreStr, 72, White, fontPath));
     mainMenu->AddGameObject(title);
+    mainMenu->AddGameObject(background);
 
     InputManager::Initialize(&Engine::GetInstance()->getSceneModule()->getWindow());
-    CreateButton(mainMenu, "Jouer", "../Asset/Boutton/red_button.png", CenterY(-75),
+    CreateButton(mainMenu, "Jouer", "../Asset/Boutton/p_button.png", CenterY(-75),
         [this](GameObject* obj) {
-            //LevelData levelData = CreateLevel();
-            //Engine::GetInstance()->getSceneModule()->SetPendingScene(levelData.scene);
+            
 
 
             PowerUpData powerupData = CreatePowerup();
             Engine::GetInstance()->getSceneModule()->SetPendingScene(powerupData.scene);
         });
 
-    CreateButton(mainMenu, "Option", "../Asset/Boutton/red_button.png", CenterY(+25),
+    CreateButton(mainMenu, "Option", "../Asset/Boutton/p_button.png", CenterY(+25),
         [this](GameObject* obj) {
             MainData newMain = CreateMain();
             OptionData optionData = CreateOption(newMain);
             Engine::GetInstance()->getSceneModule()->SetPendingScene(optionData.scene);
         });
 
-    CreateButton(mainMenu, "Quitter", "../Asset/Boutton/red_button.png", CenterY(+125), [](GameObject* obj) {
+    CreateButton(mainMenu, "Quitter", "../Asset/Boutton/p_button.png", CenterY(+125), [](GameObject* obj) {
         std::cout << "CLIC QUITTER" << std::endl;
         Engine::GetInstance()->ShutDown();
         });
@@ -202,7 +216,7 @@ OptionData Scenes::CreateOption(MainData mainData)
 
 
     // Bouton + aligné sur le centre du texte
-    CreateButton(Option, "+", "../Asset/Boutton/red_button.png", CenterY(-20),
+    CreateButton(Option, "+", "../Asset/Boutton/p_button.png", CenterY(-20),
         [this](GameObject* obj) {
             Settings::GetInstance().SetVolume(Settings::GetInstance().GetVolume() + 10);
             MainData newMain = CreateMain();
@@ -213,7 +227,7 @@ OptionData Scenes::CreateOption(MainData mainData)
 
 
     // Bouton - aligné sur le centre du texte
-    CreateButton(Option, "-", "../Asset/Boutton/red_button.png", CenterY(+40),
+    CreateButton(Option, "-", "../Asset/Boutton/p_button.png", CenterY(+40),
         [this](GameObject* obj) {
             Settings::GetInstance().SetVolume(Settings::GetInstance().GetVolume() - 10);
             MainData newMain = CreateMain();
@@ -222,7 +236,7 @@ OptionData Scenes::CreateOption(MainData mainData)
         }, 0.f, 0.1f, centreBlocX);
 
     InputManager::Initialize(&Engine::GetInstance()->getSceneModule()->getWindow());
-    CreateButton(Option, "Return", "../Asset/Boutton/red_button.png", CenterY(200),
+    CreateButton(Option, "Return", "../Asset/Boutton/p_button.png", CenterY(200),
         [this](GameObject* obj) {
             MainData newMain = CreateMain();
             Engine::GetInstance()->getSceneModule()->SetPendingScene(newMain.scene);
@@ -244,7 +258,7 @@ PowerUpData Scenes::CreatePowerup()
         
 
     // Respawn
-    CreateButton(powerupScene, "Invincibility", "../Asset/Boutton/red_button.png", CenterY(),
+    CreateButton(powerupScene, "Invincibility", "../Asset/Boutton/p_button.png", CenterY(),
         [this](GameObject* obj) {
             PlayerState::GetInstance().activePowerup = PowerupType::Invincibility;
             LevelData levelData = CreateLevel();
@@ -360,7 +374,7 @@ GameOverData Scenes::CreateGameover(MainData mainData)
     GameOver->AddGameObject(Skull);
 
 
-    CreateButton(GameOver, "Rejouer", "../Asset/Boutton/red_button.png", CenterY(50),
+    CreateButton(GameOver, "Rejouer", "../Asset/Boutton/p_button.png", CenterY(50),
         [this](GameObject* obj) {  
             MainData newMain = CreateMain();  
             Engine::GetInstance()->getSceneModule()->SetPendingScene(newMain.scene);

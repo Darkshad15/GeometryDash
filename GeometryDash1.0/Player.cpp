@@ -16,7 +16,7 @@ GameObject* createPlayer()
 	player->AddComponent(var);
 	var->addFloat("velocityY", 0.0f);
 	var->addFloat("gravity", 0.485f);
-	var->addFloat("jumpForce", -12.0f);
+	var->addFloat("jumpForce", -11.35f);
 	var->addFloat("isGrounded", 0.0f); 
 	var->addFloat("isDead", 0.0f);
 	return player;
@@ -63,8 +63,8 @@ void MovePl(GameObject* player, Scene* scene) {
 
 						float bx = obj->getTransform().pos.x;
 						float by = obj->getTransform().pos.y;
-						float bw = 64.f;
-						float bh = 64.f;
+						float bw = 60.f;
+						float bh = 60.f;
 
 						// === SPIKE : triangle ===
 						TriangleCollider* tc = obj->GetComponent<TriangleCollider>();

@@ -57,7 +57,8 @@ public:
 	void setVisible(bool B) { visible = B; }
 	void UpFrame() { currentFrame = (currentFrame + 1) % AnimationParam[1]; }
 	void DownFrame() { currentFrame = (currentFrame - 1 + AnimationParam[1]) % AnimationParam[1]; }
-	void setScale(float f) { sprite.setScale({ f,f }); }
+	void setScale(float x, float y) { sprite.setScale({ x, y }); }
+	void setScale(float f) { sprite.setScale({ f, f }); }
 	void setCenterOrigin();
 
 	//Autres

@@ -36,7 +36,7 @@ GameObject* Elements::createBlock()
 {
 	GameObject* block = new GameObject({ 100,100 });
 	Shape* shape = new Shape();
-	shape->setRectangle({ 64.f, 64.f }, sf::Color::Green);
+	shape->setRectangle({ 58.f, 58.f }, sf::Color::Green);
 	Variables* var = new Variables();
 	Collider* collision = new Collider();
 	var->addInt("Type", 1);
