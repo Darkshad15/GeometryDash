@@ -1,21 +1,38 @@
 #include <SFML/Graphics.hpp>
+#include "Elements.h"
+#include "Engine.h"
+#include "Scene.h"
+
+#include "Gen.h"
+#include "Level.h"
+#include "Player.h"
+#include "InputManager.h"
+#include "Scenes.h"
+
+
+unsigned int screenW = 800.0f;
+unsigned int screenH = 600.0f;
+
+float centerX = screenW / 2.0f;
+float centerY = screenH / 2.0f;
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode({ 200, 200 }), "SFML works!");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
 
-    while (window.isOpen())
-    {
-        while (const std::optional event = window.pollEvent())
-        {
-            if (event->is<sf::Event::Closed>())
-                window.close();
-        }
 
-        window.clear();
-        window.draw(shape);
-        window.display();
-    }
+    Engine engine({ screenW, screenH }, "Mon Premier Jeu");
+    
+    engine.getSceneModule()->getWindow().setFramerateLimit(60);
+    
+    Scenes scenes;
+    scenes.Start();
+
+
+
+    engine.Start();
+
+
+
+    return 0;
+
 }
